@@ -78,7 +78,7 @@
   var airports = String(root.RadarAirports || "").split(";").map(function (s) {
     var a = s.split(",");
     return { iata: a[0], lat: Number(a[1]), lon: Number(a[2]), big: a[3] === "L" };
-  }).filter(function (a) { return a.iata && hasLoc && Math.abs(a.lat - lat0) < 9 && Math.abs(a.lon - lon0) < 16; });
+  }).filter(function (a) { return a.iata && hasLoc && Math.abs(a.lat - lat0) < 14 && Math.abs(a.lon - lon0) < 40; });
 
   function drawLand(c, look) {
     var b = C.box(lat0, lon0, V.range, W, H), i, k;
@@ -206,7 +206,7 @@
     var seen = {}, next = [];
     fresh.forEach(function (r) {
       var here = C.now(r, t), nm = C.distNm(lat0, lon0, here[0], here[1]);
-      if (nm > 420) return;
+      if (nm > C.RANGES[C.RANGES.length - 1] * 1.25) return;
       var p = planes[r.hex] || (planes[r.hex] = { hex: r.hex, la: here[0], lo: here[1] });
       for (var k in r) if (r.hasOwnProperty(k)) p[k] = r[k];
       if (!p.type && types[r.hex]) p.type = types[r.hex];
@@ -221,16 +221,37 @@
     list = next;
     if (sel && !planes[sel]) select("");
   }
+  // adsb.lol answers 250 nm around one point: past 250 nm, six more points on a ring 375 nm out (to 625 nm)
+  function adsbPoints() {
+    var pts = [[lat0, lon0]], i;
+    if (C.RANGES[rangeI] > 250) for (i = 0; i < 6; i++) {
+      var a = i * Math.PI / 3, dLat = 375 / 60 * Math.cos(a);
+      pts.push([lat0 + dLat, lon0 + 375 / 60 * Math.sin(a) / Math.max(0.2, Math.cos((lat0 + dLat) * Math.PI / 180))]);
+    }
+    return pts;
+  }
+  var adsbBig = 0;
   function pollAdsb() {
     if (!hasLoc) return;
-    quiet(net("https://api.adsb.lol/v2/lat/" + lat0.toFixed(4) + "/lon/" + lon0.toFixed(4) + "/dist/250")).then(function (j) {
-      if (j) { adsb = C.fromAdsb(j.ac || j.aircraft || [], nowS()); adsbAt = nowS(); }
+    var pts = adsbPoints();
+    if (pts.length > 1 && Date.now() - adsbBig < 30000) return;   // the big ring: every 30 s, not 12
+    if (pts.length > 1) adsbBig = Date.now();
+    root.Promise.all(pts.map(function (q) {
+      return quiet(net("https://api.adsb.lol/v2/lat/" + q[0].toFixed(4) + "/lon/" + q[1].toFixed(4) + "/dist/250"));
+    })).then(function (js) {
+      var seen = {}, all = [], t = nowS(), ok = false;
+      js.forEach(function (j) {
+        if (!j) return;
+        ok = true;
+        C.fromAdsb(j.ac || j.aircraft || [], t).forEach(function (p) { if (!seen[p.hex]) { seen[p.hex] = 1; all.push(p); } });
+      });
+      if (ok) { adsb = all; adsbAt = t; }
       rebuild();
     });
   }
   function pollOs() {
     if (!hasLoc || !cfg.opensky) return;
-    var b = C.box(lat0, lon0, 200, Math.max(W, 1280), Math.max(H, 720));
+    var b = C.box(lat0, lon0, Math.max(200, C.RANGES[rangeI]), Math.max(W, 1280), Math.max(H, 720));
     quiet(net("https://opensky-network.org/api/states/all?lamin=" + b[0].toFixed(2) + "&lamax=" + b[1].toFixed(2) +
       "&lomin=" + b[2].toFixed(2) + "&lomax=" + b[3].toFixed(2))).then(function (j) {
       if (j && j.states) { os = C.fromOpenSky(j.states); osAt = nowS(); rebuild(); }
@@ -417,7 +438,7 @@
       tourHold = Date.now() + 60000;   // a plane picked by hand stays a minute before the tour moves on
     } else if (k === "up" || k === "down") {
       var n = Math.max(0, Math.min(C.RANGES.length - 1, rangeI + (k === "up" ? -1 : 1)));
-      if (n !== rangeI) { rangeI = n; keep("range", C.RANGES[n]); resize(); }
+      if (n !== rangeI) { rangeI = n; keep("range", C.RANGES[n]); resize(); if (C.RANGES[n] > 250) { adsbBig = 0; pollAdsb(); } }
     } else if (k === "ok") {
       style = C.STYLES[(C.STYLES.indexOf(style) + 1) % C.STYLES.length]; keep("map", style); mapDirty = true;
     } else if (k === "back") {

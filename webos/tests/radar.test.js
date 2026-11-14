@@ -48,7 +48,7 @@ test("radar: the map view puts the TV's place in the middle and the range inside
   const tiles = C.tiles(v);
   assert.ok(tiles.length > 0 && tiles.length <= 40, "a 1 GB TV draws few tiles: " + tiles.length);
   assert.strictEqual(C.tileUrl(C.MAPS.terrain[0], { z: 7, x: 99, y: 61 }), "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/7/61/99");
-  assert.deepStrictEqual(C.RANGES, [25, 50, 100, 200]);
+  assert.deepStrictEqual(C.RANGES, [25, 50, 100, 200, 300, 400, 500]);
 });
 
 test("radar: distance, bearing and the words on the card", () => {

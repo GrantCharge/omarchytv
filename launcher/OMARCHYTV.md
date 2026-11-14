@@ -125,7 +125,7 @@ tour on, every 15 s the next plane in the air gets its card (a plane picked by h
 plane is picked for you. With no Weather place set, the screensaver falls back to the native logo.
 
 Settings → Screensaver shows four more rows while Plane radar is picked: radar map (terrain, dark, streets, drawn),
-radar range (25, 50, 100, 200 nm), radar plane tour (on/off) and radar remote hints (the bar at the bottom, on/off).
+radar range (25, 50, 100, 200, 300, 400, 500 nm; past 250 nm the planes come from seven adsb.lol reads every 30 s), radar plane tour (on/off) and radar remote hints (the bar at the bottom, on/off).
 
 ```json
 "screensaver": { "art": "radar", "radarMap": "terrain", "radarRange": 100, "radarTour": true, "radarHints": true }

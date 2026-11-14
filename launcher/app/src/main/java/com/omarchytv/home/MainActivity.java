@@ -3436,7 +3436,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
                 applyLive("screensaver", lMap, j -> screensaver(j).put("radarMap", n));
                 return true;
             });
-            Integer[] ranges = {25, 50, 100, 200};
+            Integer[] ranges = {25, 50, 100, 200, 300, 400, 500};
             String lRange = str(R.string.ss_radar_range);
             p.add(lRange, cfg.radarRange + " nm", r -> {
                 Integer n = next(ranges, cfg.radarRange);

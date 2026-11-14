@@ -197,7 +197,7 @@ final class TteSaver {
                 LauncherConfig.update(c, j -> ss(j).put("radarMap", v));
             } else if ("range".equals(k)) {
                 int n = Integer.parseInt(v);
-                if (n == 25 || n == 50 || n == 100 || n == 200) LauncherConfig.update(c, j -> ss(j).put("radarRange", n));
+                if (n == 25 || n == 50 || n == 100 || n == 200 || n == 300 || n == 400 || n == 500) LauncherConfig.update(c, j -> ss(j).put("radarRange", n));
             }
         } catch (Exception e) {
             Log.w(TAG, "salvaschermo: radar save " + k + ": " + e);

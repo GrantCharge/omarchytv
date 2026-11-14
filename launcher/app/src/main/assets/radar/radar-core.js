@@ -179,7 +179,7 @@
     return '<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="-48 -48 96 96">' + body + "</svg>";
   }
 
-  var RANGES = [25, 50, 100, 200];
+  var RANGES = [25, 50, 100, 200, 300, 400, 500];
   var STYLES = ["terrain", "dark", "streets", "drawn"];
   /**
    * The pictures of a style: [base tile url, label tile url or "", credit], {z}/{y}/{x} the tile. All from Esri's

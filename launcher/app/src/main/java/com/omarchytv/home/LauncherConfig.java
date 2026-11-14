@@ -502,7 +502,7 @@ final class LauncherConfig {
     final int pulsePlanesNm;
     final boolean pulseQuakes, pulseOpensky;
     /** The radar screensaver (screensaver.art "radar"): its map style (radarMap: terrain, dark, streets, drawn), its range
-     *  in nm (radarRange: 25, 50, 100, 200), the plane tour (radarTour: a new plane's card every 15 s, default on) and
+     *  in nm (radarRange: 25, 50, 100, 200, 300, 400, 500), the plane tour (radarTour: a new plane's card every 15 s, default on) and
      *  the remote hints at the bottom (radarHints, default on). */
     final String radarMap;
     final int radarRange;
@@ -840,7 +840,7 @@ final class LauncherConfig {
         String rm = ss != null ? ss.optString("radarMap", "terrain") : "terrain";
         radarMap = Arrays.asList("terrain", "dark", "streets", "drawn").contains(rm) ? rm : "terrain";
         int rr = ss != null ? ss.optInt("radarRange", 100) : 100;
-        radarRange = rr == 25 || rr == 50 || rr == 200 ? rr : 100;
+        radarRange = rr == 25 || rr == 50 || rr == 200 || rr == 300 || rr == 400 || rr == 500 ? rr : 100;
         radarTour = ss == null || ss.optBoolean("radarTour", true);
         radarHints = ss == null || ss.optBoolean("radarHints", true);
         screensaverMode = ssMode;
