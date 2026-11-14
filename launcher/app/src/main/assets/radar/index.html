@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<!-- The plane radar (RadarActivity): a map centred on the TV's place with the planes around it, live. The data is the
+     saver's (adsb.lol, OpenSky when it is on, adsbdb), read through the launcher. Original page; the aircraft
+     silhouettes are God's Eye View's (MIT), see radar-icons.js. -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radar</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #1d3640; cursor: none;
+  font-family: Roboto, "Noto Sans", "Helvetica Neue", Arial, sans-serif; color: #fff; }
+#map { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.pill { position: absolute; background: rgba(40, 42, 46, 0.92); border-radius: 1.6vh; box-shadow: 0 0.4vh 1.6vh rgba(0, 0, 0, 0.45); }
+#top { left: 2.2vh; top: 2.2vh; padding: 1.1vh 2vh; font-size: 2.3vh; white-space: nowrap; }
+#top b { color: #f8d21c; font-weight: 700; letter-spacing: 0.08em; margin-right: 1.4vh; }
+#top span { color: #d5d8dc; }
+#top i { font-style: normal; color: #8f959c; margin: 0 0.9vh; }
+#clock { right: 2.2vh; top: 2.2vh; padding: 1.1vh 2vh; font-size: 2.3vh; color: #d5d8dc; }
+#hint { left: 50%; bottom: 2.2vh; transform: translateX(-50%); padding: 1vh 2.2vh; font-size: 1.9vh; color: #c3c7cc; white-space: nowrap; }
+#hint b { color: #f8d21c; font-weight: 600; }
+#credit { position: absolute; right: 0.8vh; bottom: 0.4vh; font-size: 1.35vh; color: rgba(255, 255, 255, 0.62); text-shadow: 0 0 0.4vh #000; }
+#msg { left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 2.4vh 3.4vh; font-size: 2.6vh; text-align: center; line-height: 1.5; }
+#card { left: 2.2vh; top: 9.4vh; width: 46vh; overflow: hidden; }
+#photo { display: block; width: 100%; height: 23vh; object-fit: cover; background: #23262a; }
+#photoBy { position: absolute; right: 0.8vh; top: 21vh; font-size: 1.2vh; color: rgba(255, 255, 255, 0.75); text-shadow: 0 0 0.4vh #000; }
+#head { background: #f8d21c; color: #1b1b1b; padding: 1.1vh 1.8vh; }
+#cs { font-size: 3.4vh; font-weight: 700; line-height: 1.1; }
+#airline { font-size: 1.9vh; font-weight: 500; opacity: 0.85; min-height: 2.2vh; }
+#route { display: flex; align-items: center; padding: 1.4vh 1.8vh 1vh; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+#route .ap { flex: 1; }
+#route .ap:last-child { text-align: right; }
+#route .code { font-size: 3.6vh; font-weight: 700; line-height: 1.1; }
+#route .city { font-size: 1.7vh; color: #b9bec4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 17vh; }
+#route .ap:last-child .city { margin-left: auto; }
+#route .mid { color: #f8d21c; font-size: 3vh; padding: 0 1vh; }
+#rows { padding: 1vh 1.8vh 1.4vh; }
+#rows div { display: flex; justify-content: space-between; font-size: 2vh; line-height: 1.75; }
+#rows span { color: #9aa0a7; }
+#rows em { font-style: normal; font-weight: 500; text-align: right; }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<canvas id="map"></canvas>
+<div id="top" class="pill"><b>RADAR</b><span id="place"></span><i>·</i><span id="range"></span><i>·</i><span id="count"></span><i>·</i><span id="feeds"></span></div>
+<div id="clock" class="pill"></div>
+<div id="card" class="pill" hidden>
+  <img id="photo" alt="" hidden><div id="photoBy" hidden></div>
+  <div id="head"><div id="cs"></div><div id="airline"></div></div>
+  <div id="route" hidden><div class="ap"><div class="code" id="from"></div><div class="city" id="fromCity"></div></div><div class="mid">✈</div>
+    <div class="ap"><div class="code" id="to"></div><div class="city" id="toCity"></div></div></div>
+  <div id="rows"></div>
+</div>
+<div id="hint" class="pill"><b>◀ ▶</b> plane &nbsp; <b>▲ ▼</b> range &nbsp; <b>OK</b> map &nbsp; <b>BACK</b> <span id="backs">leave</span></div>
+<div id="credit"></div>
+<div id="msg" class="pill" hidden></div>
+<script src="../pulse/pulse-tv-data.js"></script>
+<script src="../pulse/pulse-tv-hub.js"></script>
+<script src="radar-icons.js"></script>
+<script src="radar-core.js"></script>
+<script src="radar-airports.js"></script>
+<script src="radar-land.js"></script>
+<script src="radar.js"></script>
+</body>
+</html>

@@ -465,6 +465,8 @@
     <string name="arcade_sound">Spillehallyd</string>
     <string name="arcade_pc_theme">Spillehall: RICE WARS bytter også PC-ens tema</string>
     <string name="arcade_crashed">Spillehallen fungerer ikke lenger</string>
+    <string name="radar_crashed">Radaren sluttet å virke</string>
+    <string name="radar_hint">Flyene rundt deg, direkte</string>
     <string name="share_qr">OmarchyTV-QR-kode</string>
     <string name="cine_sources">kilder</string>
     <string name="cine_library">bibliotek</string>

@@ -465,6 +465,8 @@
     <string name="arcade_sound">صوت صالة الألعاب</string>
     <string name="arcade_pc_theme">صالة الألعاب: RICE WARS يغيّر سمة الحاسوب أيضًا</string>
     <string name="arcade_crashed">توقفت صالة الألعاب عن العمل</string>
+    <string name="radar_crashed">توقف الرادار عن العمل</string>
+    <string name="radar_hint">الطائرات من حولك، مباشرة</string>
     <string name="share_qr">رمز QR لـ OmarchyTV</string>
     <string name="cine_sources">المصادر</string>
     <string name="cine_library">المكتبة</string>

@@ -465,6 +465,8 @@
     <string name="arcade_sound">Pelihallin äänet</string>
     <string name="arcade_pc_theme">Pelihalli: RICE WARS vaihtaa myös PC:n teeman</string>
     <string name="arcade_crashed">Pelihalli lakkasi toimimasta</string>
+    <string name="radar_crashed">Tutka lakkasi toimimasta</string>
+    <string name="radar_hint">Lentokoneet ympärilläsi, suorana</string>
     <string name="share_qr">OmarchyTV:n QR-koodi</string>
     <string name="cine_sources">lähteet</string>
     <string name="cine_library">kirjasto</string>

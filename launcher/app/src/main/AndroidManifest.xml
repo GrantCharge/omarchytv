@@ -136,6 +136,15 @@
             android:screenOrientation="landscape"
             android:theme="@style/Theme.TvHome" />
 
+        <!-- The plane radar: a map with the planes around the TV (assets/radar) in a WebView. -->
+        <activity
+            android:name=".RadarActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden|navigation"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.TvHome" />
+
         <!-- Web apps: own process, so the launcher never holds a WebView; the process exits with the web app. -->
         <activity
             android:name=".WebAppActivity"

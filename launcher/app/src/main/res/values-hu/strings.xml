@@ -465,6 +465,8 @@
     <string name="arcade_sound">Játékterem hangja</string>
     <string name="arcade_pc_theme">Játékterem: a RICE WARS a PC témáját is váltja</string>
     <string name="arcade_crashed">A játékterem leállt</string>
+    <string name="radar_crashed">A radar leállt</string>
+    <string name="radar_hint">Repülők körülötted, élőben</string>
     <string name="share_qr">OmarchyTV QR-kód</string>
     <string name="cine_sources">források</string>
     <string name="cine_library">könyvtár</string>

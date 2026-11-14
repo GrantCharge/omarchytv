@@ -465,6 +465,8 @@
     <string name="arcade_sound">Ήχος αίθουσας</string>
     <string name="arcade_pc_theme">Αίθουσα: το RICE WARS αλλάζει και το θέμα του PC</string>
     <string name="arcade_crashed">Η αίθουσα παιχνιδιών σταμάτησε να λειτουργεί</string>
+    <string name="radar_crashed">Το ραντάρ σταμάτησε να λειτουργεί</string>
+    <string name="radar_hint">Τα αεροπλάνα γύρω σας, ζωντανά</string>
     <string name="share_qr">Κωδικός QR του OmarchyTV</string>
     <string name="cine_sources">πηγές</string>
     <string name="cine_library">βιβλιοθήκη</string>

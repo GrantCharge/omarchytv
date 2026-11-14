@@ -465,6 +465,8 @@
     <string name="arcade_sound">Som da sala de jogos</string>
     <string name="arcade_pc_theme">Sala de jogos: RICE WARS muda também o tema do PC</string>
     <string name="arcade_crashed">A sala de jogos deixou de funcionar</string>
+    <string name="radar_crashed">O radar deixou de funcionar</string>
+    <string name="radar_hint">Os aviões à sua volta, em direto</string>
     <string name="share_qr">Código QR do OmarchyTV</string>
     <string name="cine_sources">fontes</string>
     <string name="cine_library">biblioteca</string>

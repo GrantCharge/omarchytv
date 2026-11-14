@@ -616,6 +616,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
             case "arcade":   // v2.14: top-bar icon next to Cinemarchy
                 ArcadeActivity.open(this);
                 break;
+            case "radar":
+                RadarActivity.open(this);
+                break;
             case "grok-bot":
                 showMenu("grok-bot", null);
                 break;
@@ -780,6 +783,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
         items.add(new Walker.Item("X (x.com)", tApp, () -> WebAppActivity.open(this, LauncherConfig.X_WEBAPP)));
         if (cfg.pluginOmastorm) items.add(new Walker.Item("⛈ Omastorm (radar)", tApp, this::openOmastorm));
         items.add(new Walker.Item("🕹 OmarchyTV Arcade (V-HOLD · RICE WARS · FORK BOMB)", tApp, () -> ArcadeActivity.open(this)));
+        items.add(new Walker.Item("✈ Radar (planes around you, live)", tApp, () -> RadarActivity.open(this)));
         items.add(new Walker.Item("🎬 Cinemarchy (Media, Streaming, Live TV & Snippets)", str(R.string.cinemarchy_hub), () -> open(new Intent(this, CinemarchyActivity.class))));
         items.add(new Walker.Item("Aquarium Screensaver (Omarchy Cyber-TUI Ocean)", str(R.string.menu_screensaver), () -> {
             LauncherConfig.update(this, j -> screensaver(j).put("art", "aquarium").put("mode", "aquarium"));
@@ -860,6 +864,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
                 if (walker != null) walker.close();
                 if (menu != null && menu.isShowing()) menu.dismiss();
                 ArcadeActivity.open(this);
+                break;
+            case "radar":   // the plane radar on a remote key
+                if (walker != null) walker.close();
+                if (menu != null && menu.isShowing()) menu.dismiss();
+                RadarActivity.open(this);
                 break;
             case "grokbot":   // v2.15 (#91): a key remapper can bind any key to the Grok Bot companion (Philips: Blue)
                 if (walker != null) walker.close();
@@ -1668,6 +1677,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
             case "next-theme": return str(R.string.keys_action_next_theme);
             case "cinemarchy": return "🎬 Cinemarchy";   // product names: the same in every language
             case "arcade": return "🕹 OmarchyTV Arcade";
+            case "radar": return "✈ Radar";
             case "grokbot": return "● Grok Bot";
             case "terminal": return "▌ Grok terminal";
             default: return id;
@@ -1944,6 +1954,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
         // v2.14 OmarchyTV Arcade: V-HOLD, RICE WARS, FORK BOMB (assets/games, the same as on LG/Samsung).
         p.add("🕹 OmarchyTV Arcade", "V-HOLD · RICE WARS · FORK BOMB ›", r -> {
             handler.post(() -> ArcadeActivity.open(this));
+            return false;
+        });
+        // The plane radar (assets/radar): the planes around the TV's place on a map, live.
+        p.add("✈ Radar", str(R.string.radar_hint) + " ›", r -> {
+            handler.post(() -> RadarActivity.open(this));
             return false;
         });
         return p;

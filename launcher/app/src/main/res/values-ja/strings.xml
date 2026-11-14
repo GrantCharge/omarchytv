@@ -465,6 +465,8 @@
     <string name="arcade_sound">ゲームセンターの音</string>
     <string name="arcade_pc_theme">ゲームセンター: RICE WARS で PC のテーマも変更</string>
     <string name="arcade_crashed">ゲームセンターが停止しました</string>
+    <string name="radar_crashed">レーダーが動作を停止しました</string>
+    <string name="radar_hint">周囲の飛行機をライブ表示</string>
     <string name="share_qr">OmarchyTV の QR コード</string>
     <string name="cine_sources">ソース</string>
     <string name="cine_library">ライブラリ</string>

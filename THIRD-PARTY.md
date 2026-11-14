@@ -124,6 +124,15 @@ from the user's Omarchy install (not redistributed). If published, the plugin mu
 | Kp index | NOAA SWPC | https://services.swpc.noaa.gov | US public domain | |
 | Weather | Open-Meteo | https://open-meteo.com | CC BY 4.0 | |
 
+## 7e. Plane radar (Android TV)
+| Item | Author | Source | Licence | Modifications |
+|---|---|---|---|---|
+| Aircraft silhouettes and the ICAO type → class lists (`assets/radar/radar-icons.js`) | Bilawal Sidhu (God's Eye View); the silhouette language follows skylight by cpaczek | https://github.com/bilawalsidhu/gods-eye-view (`src/data/aircraftIcons.js`, `src/data/aircraftClass.js`), https://github.com/cpaczek/skylight | MIT (Copyright (c) 2026 Bilawal Sidhu; Copyright (c) 2026 cpaczek), `licenses/gods-eye-view-MIT.txt`, `licenses/skylight-MIT.txt` | Rewritten as one ES5 file; outline placeholders added so the radar recolours them. The page, the map and the rest of the radar are original. |
+| Airports (`assets/radar/radar-airports.js`) | OurAirports contributors | https://ourairports.com/data/ | Public domain | Only airports with scheduled service and an IATA code; built by `tools/radar_data.py`. |
+| Land outlines (`assets/radar/radar-land.js`) | Natural Earth | https://www.naturalearthdata.com/ (1:50m land) | Public domain | Thinned to about 2 km and delta-encoded by `tools/radar_data.py`. |
+| Map pictures (read live, not shipped) | Esri and its data providers | `server.arcgisonline.com` public tile services | Esri terms of use; credit shown on the map | none. |
+| Plane data (read live, not shipped) | adsb.lol (ODbL), adsbdb, OpenSky Network (opt-in), aircraft photos by airport-data.com | https://adsb.lol, https://www.adsbdb.com, https://opensky-network.org, https://airport-data.com | each service's terms | none. |
+
 ## 8. Trademarks
 Netflix, YouTube, Google, Android, Android TV, Google TV, Chromecast, Sony, BRAVIA, X, Prime Video, Disney+, Spotify and
 all other product names, logos and app icons that appear in the launcher or in screenshots are trademarks of their

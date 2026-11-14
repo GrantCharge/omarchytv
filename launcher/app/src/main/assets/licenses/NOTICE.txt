@@ -16,6 +16,8 @@ This product includes third-party software, fonts and artwork:
 - Sharp AQUOS Live TV integration & bug reports - Anderson Leite (@anderson-leite), MIT
 - Free My TV (LocalAdb port) - (c) 2026 Free My TV contributors, MIT
 - tte.js - Flavio Copes, MIT; TerminalTextEffects - ChrisBuilds, MIT; ttfx - 37signals/omacom, MIT
+- Plane radar: aircraft silhouettes and type classes - God's Eye View, (c) 2026 Bilawal Sidhu, MIT, after skylight, (c) 2026 cpaczek, MIT;
+  airports - OurAirports (public domain); land outlines - Natural Earth (public domain); map pictures - Esri and its data providers
 - Cascadia Code / CaskaydiaMono - (c) Microsoft Corporation, SIL OFL 1.1 (RFN "Cascadia Code"); Nerd Fonts, MIT
 - AndroidX / Media3 ExoPlayer - The Android Open Source Project, Apache License 2.0
 - Inspired by tv-vibehack by Gathin (MIT)
