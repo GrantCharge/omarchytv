@@ -3428,6 +3428,34 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
                 return false;
             });
         }
+        if ("radar".equals(cfg.screensaverArt)) {   // the radar saver: map, range, plane tour, remote hints
+            String[] maps = {"terrain", "dark", "streets", "drawn"};
+            String lMap = str(R.string.ss_radar_map);
+            p.add(lMap, cfg.radarMap, r -> {
+                String n = next(maps, cfg.radarMap);
+                applyLive("screensaver", lMap, j -> screensaver(j).put("radarMap", n));
+                return true;
+            });
+            Integer[] ranges = {25, 50, 100, 200};
+            String lRange = str(R.string.ss_radar_range);
+            p.add(lRange, cfg.radarRange + " nm", r -> {
+                Integer n = next(ranges, cfg.radarRange);
+                applyLive("screensaver", lRange, j -> screensaver(j).put("radarRange", n));
+                return true;
+            });
+            String lTour = str(R.string.ss_radar_tour);
+            p.add(lTour, str(cfg.radarTour ? R.string.on : R.string.off), r -> {
+                boolean n = !cfg.radarTour;
+                applyLive("screensaver", lTour, j -> screensaver(j).put("radarTour", n));
+                return true;
+            });
+            String lHints = str(R.string.ss_radar_hints);
+            p.add(lHints, str(cfg.radarHints ? R.string.on : R.string.off), r -> {
+                boolean n = !cfg.radarHints;
+                applyLive("screensaver", lHints, j -> screensaver(j).put("radarHints", n));
+                return true;
+            });
+        }
         if (cfg.hasSsBefore) {   // v2.15: undo the one-time switch to Pulse
             String lPrev = str(R.string.ss_restore_previous);
             p.add(lPrev, "›", r -> {

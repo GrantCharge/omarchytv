@@ -26,12 +26,14 @@
   // The box on Home (RadarWidget): no remote, no card; the range is the config's, the marks are drawn bigger.
   var widget = !!cfg.widget;
   if (widget) doc.documentElement.className = "widget";
-  // The screensaver (TteSaver, screensaver.art "radar"): the full map, no remote, a plane's card in turn.
+  // The screensaver (TteSaver, screensaver.art "radar"): the full map and the remote (arrows and OK; Back closes it),
+  // its map and range from the saver settings, a plane's card in turn (cfg.tour) and the hints unless cfg.hints is false.
   var saver = !widget && !!cfg.saver, saverHost = root.OmarchySaver || null;
-  if (saver) doc.documentElement.className = "saver";
-  var rangeI = C.RANGES.indexOf(Number(widget ? cfg.range || 200 : saved("range", cfg.range || 200)));
+  var tour = saver && cfg.tour !== false, tourHold = 0;
+  if (saver) doc.documentElement.className = "saver" + (cfg.hints === false ? " nohints" : "");
+  var rangeI = C.RANGES.indexOf(Number(widget || saver ? cfg.range || 200 : saved("range", cfg.range || 200)));
   if (rangeI < 0) rangeI = C.RANGES.length - 1;
-  var style = saved("map", cfg.map || "terrain");
+  var style = saver ? cfg.map || "terrain" : saved("map", cfg.map || "terrain");
   if (C.STYLES.indexOf(style) < 0) style = "terrain";
 
   // what the styles look like under and over the pictures
@@ -386,7 +388,7 @@
 
   function select(hex) {
     sel = hex || "";
-    $("backs").textContent = sel ? "close" : "leave";
+    $("backs").textContent = sel && !saver ? "close" : "leave";
     card();
     if (sel) lookup();
   }
@@ -407,21 +409,27 @@
 
   // ------------------------------------------------------------------ the remote
   function key(k) {
-    if (!V || widget || saver) return k === "back" ? "false" : "true";
+    if (!V || widget) return k === "back" ? "false" : "true";
+    if (saver && k === "back") return "false";   // the saver closes on Back
     if (k === "left" || k === "right") {
       var on = list.filter(function (p) { return p.x > 0 && p.x < W && p.y > 0 && p.y < H; });
       select(C.pick(on, sel, k === "right" ? 1 : -1));
+      tourHold = Date.now() + 60000;   // a plane picked by hand stays a minute before the tour moves on
     } else if (k === "up" || k === "down") {
       var n = Math.max(0, Math.min(C.RANGES.length - 1, rangeI + (k === "up" ? -1 : 1)));
-      if (n !== rangeI) { rangeI = n; save("range", C.RANGES[n]); resize(); }
+      if (n !== rangeI) { rangeI = n; keep("range", C.RANGES[n]); resize(); }
     } else if (k === "ok") {
-      style = C.STYLES[(C.STYLES.indexOf(style) + 1) % C.STYLES.length]; save("map", style); mapDirty = true;
+      style = C.STYLES[(C.STYLES.indexOf(style) + 1) % C.STYLES.length]; keep("map", style); mapDirty = true;
     } else if (k === "back") {
       if (!sel) return "false";   // nothing picked: the launcher closes the radar
       select("");
     }
     bar(); draw();
     return "true";
+  }
+  function keep(k, v) {   // the full screen keeps it in the page; the saver in the launcher's settings
+    if (!saver) { save(k, v); return; }
+    try { if (host && host.save) host.save(k, String(v)); } catch (e) { log("save " + e); }
   }
   root.OmarchyRadarHost = { key: key, pause: function () { paused = true; }, resume: function () { paused = false; pollAdsb(); } };
   doc.addEventListener("keydown", function (e) {   // a keyboard, on a desk
@@ -446,14 +454,16 @@
     root.setInterval(function () { if (!paused) lookup(); }, widget ? 10000 : 2500);   // the box only needs the types, for the silhouettes
     root.setInterval(function () { if (!paused) bar(); }, 1000);
     root.setInterval(function () { if (!paused) draw(); }, widget ? 1000 : 250);
-    if (saver) {
+    if (tour) {
       // a tour: every 15 s the next plane in the air gets its card, so the saver keeps moving
       root.setInterval(function () {
-        if (paused) return;
+        if (paused || Date.now() < tourHold) return;
         var on = list.filter(function (p) { return !p.ground && p.x > 0 && p.x < W && p.y > 0 && p.y < H; });
         select(on.length ? C.pick(on, sel, 1) : "");
         draw();
       }, 15000);
+    }
+    if (saver) {
       draw();
       if (saverHost && saverHost.drawn) { try { saverHost.drawn("radar", list.length, "radar"); } catch (e) {} }
     }

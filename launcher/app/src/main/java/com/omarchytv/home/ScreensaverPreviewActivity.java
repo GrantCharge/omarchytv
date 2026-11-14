@@ -67,6 +67,12 @@ public class ScreensaverPreviewActivity extends Activity {
                 saver.toggleSound();
                 return true;
             }
+            // the radar saver: the arrows pick a plane and the range, OK changes the map; Back and the rest close it
+            String rk = saver != null && saver.isRadar() ? RadarActivity.keyName(kc) : null;
+            if (rk != null && !"back".equals(rk)) {
+                saver.radarKey(rk);
+                return true;
+            }
             finish();
             overridePendingTransition(0, 0);
         }

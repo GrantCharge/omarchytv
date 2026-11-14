@@ -119,6 +119,8 @@ final class TteSaver {
         w.addJavascriptInterface(new Object() {   // radar.js reads OmarchyRadar.config()
             @JavascriptInterface public String config() { return radarCfg(c.getApplicationContext()); }
             @JavascriptInterface public void log(String m) { Log.i(TAG, "salvaschermo: " + m); }
+            /** The remote changed the map or the range on the saver: keep it for next time (and the menu shows it). */
+            @JavascriptInterface public void save(String k, String v) { radarSave(c.getApplicationContext(), k, v); }
         }, "OmarchyRadar");
         ws.setDomStorageEnabled(true);   // the radar keeps its range, map style and plane types
         w.setWebChromeClient(new WebChromeClient() {
@@ -177,14 +179,48 @@ final class TteSaver {
         }
     }
 
-    /** RadarActivity.config with saver:true: the radar page as a screensaver (no remote, a card in turn). */
+    /** RadarActivity.config with saver:true and the saver's own map, range, tour and hints. */
     static String radarCfg(Context c) {
         try {
-            return new org.json.JSONObject(RadarActivity.config(c)).put("saver", true).toString();
+            LauncherConfig cfg = LauncherConfig.get(c);
+            return new org.json.JSONObject(RadarActivity.config(c)).put("saver", true).put("map", cfg.radarMap)
+                    .put("range", cfg.radarRange).put("tour", cfg.radarTour).put("hints", cfg.radarHints).toString();
         } catch (Exception e) {
             return "{\"saver\":true}";
         }
     }
+
+    /** map or range picked with the remote on the radar saver -> screensaver.radarMap / radarRange. */
+    static void radarSave(Context c, String k, String v) {
+        try {
+            if ("map".equals(k) && java.util.Arrays.asList("terrain", "dark", "streets", "drawn").contains(v)) {
+                LauncherConfig.update(c, j -> ss(j).put("radarMap", v));
+            } else if ("range".equals(k)) {
+                int n = Integer.parseInt(v);
+                if (n == 25 || n == 50 || n == 100 || n == 200) LauncherConfig.update(c, j -> ss(j).put("radarRange", n));
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "salvaschermo: radar save " + k + ": " + e);
+        }
+    }
+
+    private static org.json.JSONObject ss(org.json.JSONObject j) throws org.json.JSONException {
+        org.json.JSONObject s = j.optJSONObject("screensaver");
+        if (s == null) j.put("screensaver", s = new org.json.JSONObject());
+        return s;
+    }
+
+    /** True while the radar page is the saver: the arrows and OK go to it (ScreensaverPreviewActivity). */
+    boolean isRadar() {
+        return radarOn && web != null && fallback == null;
+    }
+
+    /** One remote key ("up", "down", "left", "right", "ok") to the radar page. */
+    void radarKey(String k) {
+        if (isRadar()) web.evaluateJavascript("window.OmarchyRadarHost&&OmarchyRadarHost.key('" + k + "')", null);
+    }
+
+    private boolean radarOn;
 
     static String text(Context c) {
         LauncherConfig cfg = LauncherConfig.get(c);
@@ -274,6 +310,7 @@ final class TteSaver {
         LauncherConfig cfg = LauncherConfig.get(ctx);
         boolean pulse = !cfg.living && "pulse".equals(cfg.screensaverArt) && !"native".equals(forceMode);   // v2.15
         boolean radar = !cfg.living && "radar".equals(cfg.screensaverArt) && !"native".equals(forceMode);   // the plane radar
+        radarOn = radar;
         if (!pulse && !radar && !cfg.living && ("native".equals(forceMode) || AsciiSaverView.isAquarium(cfg))) {   // v2.14 Live needs the page
             toNative("aquarium/nativo");
             return;

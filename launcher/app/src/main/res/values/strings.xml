@@ -366,6 +366,10 @@
     <string name="w_racing_bar" translatable="false">racing countdown in the bar</string>
     <string name="ss_pulse_graphics" translatable="false">Pulse graphics</string>
     <string name="ss_pulse_racing" translatable="false">racing panel on Pulse</string>
+    <string name="ss_radar_map" translatable="false">radar map</string>
+    <string name="ss_radar_range" translatable="false">radar range</string>
+    <string name="ss_radar_tour" translatable="false">radar plane tour</string>
+    <string name="ss_radar_hints" translatable="false">radar remote hints</string>
     <string name="ss_pulse_panels" translatable="false">Pulse panels</string>
     <string name="ss_pulse_panel_weather" translatable="false">weather</string>
     <string name="ss_pulse_panel_air" translatable="false">air</string>

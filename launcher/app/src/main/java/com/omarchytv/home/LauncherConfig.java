@@ -501,6 +501,12 @@ final class LauncherConfig {
      *  panel (screensaver.earthquakes, default on) and OpenSky as a second plane feed (screensaver.opensky, default off). */
     final int pulsePlanesNm;
     final boolean pulseQuakes, pulseOpensky;
+    /** The radar screensaver (screensaver.art "radar"): its map style (radarMap: terrain, dark, streets, drawn), its range
+     *  in nm (radarRange: 25, 50, 100, 200), the plane tour (radarTour: a new plane's card every 15 s, default on) and
+     *  the remote hints at the bottom (radarHints, default on). */
+    final String radarMap;
+    final int radarRange;
+    final boolean radarTour, radarHints;
     /** 2.15.1 Pulse's racing side panel (screensaver.racing; default: on when the Home racing widget is on). */
     final boolean pulseRacing;
     /** 2.15.1 which Pulse side panels show (screensaver.pulsePanels). Missing keys are on. */
@@ -831,6 +837,12 @@ final class LauncherConfig {
         pulsePanels = java.util.Collections.unmodifiableMap(pulsePanelMap);
         pulseQuakes = pulsePanelMap.containsKey("earthquakes") ? pulsePanelMap.get("earthquakes") : (ss == null || ss.optBoolean("earthquakes", true));
         pulseOpensky = ss != null && ss.optBoolean("opensky", false);
+        String rm = ss != null ? ss.optString("radarMap", "terrain") : "terrain";
+        radarMap = Arrays.asList("terrain", "dark", "streets", "drawn").contains(rm) ? rm : "terrain";
+        int rr = ss != null ? ss.optInt("radarRange", 100) : 100;
+        radarRange = rr == 25 || rr == 50 || rr == 200 ? rr : 100;
+        radarTour = ss == null || ss.optBoolean("radarTour", true);
+        radarHints = ss == null || ss.optBoolean("radarHints", true);
         screensaverMode = ssMode;
         boolean defSsClock = c != null && c.getResources().getBoolean(R.bool.screensaver_clock);
         screensaverClock = ss != null ? ss.optBoolean("clock", defSsClock) : defSsClock;

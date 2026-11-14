@@ -119,11 +119,16 @@ the planes less often than the full screen, and runs only while Home is in front
 ```
 
 The radar is also a screensaver: Settings → Screensaver → Logo → `Plane radar` (`"screensaver": {"art": "radar"}`).
-It is the full-screen map with no remote and no hint bar; every 15 s the next plane in the air gets its card. With no
-Weather place set, the screensaver falls back to the native logo.
+It is the full-screen map with the same remote as the radar screen: ◀ ▶ pick a plane, ▲ ▼ change the range, OK
+changes the map; Back (or any other key) closes it. A range or map picked with the remote is kept. With the plane
+tour on, every 15 s the next plane in the air gets its card (a plane picked by hand stays a minute); with it off, no
+plane is picked for you. With no Weather place set, the screensaver falls back to the native logo.
+
+Settings → Screensaver shows four more rows while Plane radar is picked: radar map (terrain, dark, streets, drawn),
+radar range (25, 50, 100, 200 nm), radar plane tour (on/off) and radar remote hints (the bar at the bottom, on/off).
 
 ```json
-"screensaver": { "art": "radar" }
+"screensaver": { "art": "radar", "radarMap": "terrain", "radarRange": 100, "radarTour": true, "radarHints": true }
 ```
 
 ### Racing: F1 and MotoGP 2026

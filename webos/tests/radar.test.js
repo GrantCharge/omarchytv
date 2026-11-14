@@ -102,18 +102,24 @@ test("radar: the box on Home is the same page with the map only, and reads the p
   assert.match(js, /var widget = !!cfg\.widget;/);
   assert.match(js, /widget \? 120 : 60/, "OpenSky every two minutes in the box");
   assert.match(js, /widget \? 20000 : 12000/);
-  assert.match(js, /if \(!V \|\| widget \|\| saver\) return k === "back" \? "false" : "true";/, "no remote in the box");
+  assert.match(js, /if \(!V \|\| widget\) return k === "back" \? "false" : "true";/, "no remote in the box");
 });
 
-test("radar: the screensaver mode (saver:true) has no remote, tours the planes and tells the saver it drew", () => {
+test("radar: the screensaver mode (saver:true) takes the remote, tours the planes when asked and tells the saver it drew", () => {
   const js = fs.readFileSync(R + "radar.js", "utf8"), html = fs.readFileSync(R + "index.html", "utf8");
   assert.match(js, /var saver = !widget && !!cfg\.saver/);
   assert.match(js, /saverHost\.drawn\("radar"/);
   assert.match(js, /saverHost\.fail\("radar: no place set"\)/);
-  assert.match(html, /\.saver #hint \{ display: none; \}/);
+  assert.match(html, /\.saver\.nohints #hint \{ display: none; \}/);
+  assert.match(js, /var tour = saver && cfg\.tour !== false/);
+  assert.match(js, /if \(saver && k === "back"\) return "false";/);
+  assert.match(js, /host\.save\(k, String\(v\)\)/);
+  const prev = fs.readFileSync(path.join(__dirname, "../../launcher/app/src/main/java/com/omarchytv/home/ScreensaverPreviewActivity.java"), "utf8");
+  assert.match(prev, /saver\.radarKey\(rk\)/);
   const tte = fs.readFileSync(path.join(__dirname, "../../launcher/app/src/main/java/com/omarchytv/home/TteSaver.java"), "utf8");
   assert.match(tte, /"\/assets\/radar\/index\.html"/);
   assert.match(tte, /"OmarchyRadar"/);
   const main = fs.readFileSync(path.join(__dirname, "../../launcher/app/src/main/java/com/omarchytv/home/MainActivity.java"), "utf8");
   assert.match(main, /String\[\] logos = \{"pulse", "radar",/);
+  for (const k of ["radarMap", "radarRange", "radarTour", "radarHints"]) assert.match(main, new RegExp('put\\("' + k + '"'));
 });
