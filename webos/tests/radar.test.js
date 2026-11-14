@@ -94,3 +94,13 @@ test("radar: the remote walks the planes clockwise and wraps", () => {
   assert.strictEqual(C.pick(L, "gone", 1), "a", "the picked plane left: start again");
   assert.strictEqual(C.pick([], "", 1), "", "no planes, no pick");
 });
+
+test("radar: the box on Home is the same page with the map only, and reads the planes less often", () => {
+  const html = fs.readFileSync(R + "index.html", "utf8");
+  for (const id of ["#hint", "#clock", "#card"]) assert.ok(new RegExp("\\.widget " + id + "[^{]*\\{[^}]*display: none").test(html) || html.indexOf(".widget " + id) > 0, id + " hidden in the box");
+  const js = fs.readFileSync(R + "radar.js", "utf8");
+  assert.match(js, /var widget = !!cfg\.widget;/);
+  assert.match(js, /widget \? 120 : 60/, "OpenSky every two minutes in the box");
+  assert.match(js, /widget \? 20000 : 12000/);
+  assert.match(js, /if \(!V \|\| widget\) return k === "back" \? "false" : "true";/, "no remote in the box");
+});

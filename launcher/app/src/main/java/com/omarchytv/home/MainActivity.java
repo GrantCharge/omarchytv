@@ -1010,6 +1010,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
     protected void onResume() {
         super.onResume();
         BootScreenView.onResume(this, findViewById(R.id.root));
+        if (home != null) home.resumeRadar();   // the "radar" home widget, only while Home is in front
         OmaFireLayer.onResume(this, findViewById(R.id.wallpaper));   // v2.14 OmaFire animated wallpaper   // "wake" mode: replay after the screen came on
         bindCompanion();
         OmarchyLink.sweepCasts(this);   // 24 h cleanup of cast uploads (no-op when nothing was ever cast)
@@ -1113,6 +1114,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
         super.onPause();
         if (companion != null) { companion.setArmed(false); companion.stop(); }
         OmaFireLayer.onPause();
+        RadarWidget.onPause();
         resumed = false;
         OmarchyLink.setHomeVisible(false);
         handler.removeCallbacks(idle);
@@ -1134,6 +1136,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
         BootScreenView.onDestroy(this);
         LiftoffView.onDestroy();
         OmaFireLayer.onPause();
+        RadarWidget.onPause();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
         if (cm != null) cm.unregisterNetworkCallback(networkCallback);
         OmarchyLink.removeListener(linkListener);
@@ -3601,8 +3604,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
                 lOff = str(R.string.ai_offline_row);
         // v2.10: each home widget can be switched off ("No" really hides it); the clock widget is gone (bar only).
         String[][] hw = {{"term", str(R.string.v210_w_term)}, {"weather", str(R.string.v210_w_weather)}, {"pc", str(R.string.v210_w_pc)},
-                {"ai", str(R.string.v210_w_ai)}, {"deploys", str(R.string.v210_w_deploys)}, {"racing", str(R.string.w_racing)}};
-        boolean[] hwOn = {cfg.wTerm, cfg.wWeather, cfg.wPc, cfg.wAi, cfg.wDeploys, cfg.wRacing};
+                {"ai", str(R.string.v210_w_ai)}, {"deploys", str(R.string.v210_w_deploys)}, {"racing", str(R.string.w_racing)},
+                {"radar", str(R.string.w_radar)}};
+        boolean[] hwOn = {cfg.wTerm, cfg.wWeather, cfg.wPc, cfg.wAi, cfg.wDeploys, cfg.wRacing, cfg.wRadar};
         for (int i = 0; i < hw.length; i++) {
             final String id = hw[i][0], label = hw[i][1];
             final boolean on = hwOn[i];

@@ -101,6 +101,23 @@ else from the fetch), so a dead source never shows old numbers as current. No ur
 status icons (same data and location as the weather widget). Combine with `"homeWidgets": {"weather": false}`
 to keep only the bar version.
 
+### Radar: the planes around you
+
+`✈ Radar` (the settings menu, the search, or a remote key bound to the action `radar`) opens a full-screen map
+centred on the Weather place with the planes around it, live: ◀ ▶ pick a plane (a card shows its photo, airline,
+route, type, altitude and speed), ▲ ▼ change the range (25, 50, 100, 200 nm), OK changes the map (satellite, dark,
+streets, drawn), Back closes the card and then leaves. The planes are the Pulse screensaver's (adsb.lol and adsbdb,
+plus OpenSky with `"screensaver": {"opensky": true}`), read through the launcher; the first range is
+`screensaver.planesNm`. Map pictures are read from Esri's public tile service; the drawn map needs no network.
+
+`"homeWidgets": {"radar": true}` (default off; also Settings → Widgets) puts the same radar in a large box at the top
+left of Home, in the term box's place (the term box is off while it is on). The box has no focus and no keys, reads
+the planes less often than the full screen, and runs only while Home is in front.
+
+```json
+"homeWidgets": { "radar": true }
+```
+
 ### Racing: F1 and MotoGP 2026
 
 `"homeWidgets": {"racing": true}` (default off; also Settings → Widgets) adds a `racing` panel as the first column of

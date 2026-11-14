@@ -554,6 +554,8 @@ final class LauncherConfig {
     /** "racing" home widget (remaining 2026 F1 + MotoGP weekends, homeWidgets.racing, default off) and its
      *  countdown in the bar (racing.bar; 2.15.1: off unless set, the panel has its own countdown). */
     final boolean wRacing, barRacing;
+    /** "radar" home widget (the plane radar in a box at the top left, homeWidgets.radar, default off). */
+    final boolean wRadar;
     /** omarchytv.json racing.timezone: the zone session times are shown in (default Asia/Bangkok). */
     final String racingTz;
     /** 2.15 omarchytv.json racing.series: the series the widget follows (Racing.SERIES ids), default f1 and motogp. */
@@ -864,6 +866,7 @@ final class LauncherConfig {
         wDeploys = hw == null || hw.optBoolean("deploys", true);
         wTerm = hw == null || hw.optBoolean("term", true);
         wRacing = hw != null && hw.optBoolean("racing", false);   // opt-in: a new widget never appears unasked
+        wRadar = hw != null && hw.optBoolean("radar", false);
         JSONObject rc = j != null ? j.optJSONObject("racing") : null;
         barRacing = rc != null && rc.optBoolean("bar", false);   // 2.15.1: off unless asked (the countdown is in the panel now)
         racingTz = rc != null && !rc.optString("timezone", "").trim().isEmpty() ? rc.optString("timezone").trim() : "";   // 2.15: "" = the TV's own zone

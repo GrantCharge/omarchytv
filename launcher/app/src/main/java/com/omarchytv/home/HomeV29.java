@@ -104,6 +104,9 @@ final class HomeV29 extends FrameLayout {
     private int activeWs = 1;
     // terminal
     private final BoxView term;
+    /** "radar": the plane radar in a large box (RadarWidget), top left, in the term box's place. */
+    private final BoxView radarBox;
+    private final FrameLayout radarHold;
     private final TextView termInfo, termLogo, termPrompt;
     // widgets
     private final LinearLayout widgets;
@@ -254,6 +257,16 @@ final class HomeV29 extends FrameLayout {
         tl.leftMargin = px(32);
         tl.topMargin = px(76);
         addView(term, tl);
+        // ---- radar: the same corner as the term box (x 32, y 76, w 640), 600 high; with it on the term box is off ----
+        radarBox = new BoxView(a, s, tf);
+        radarBox.setLegend("radar", px(10), px(10));
+        radarBox.setVisibility(GONE);
+        LayoutParams rdl = new LayoutParams(px(RADAR_W), px(RADAR_H));
+        rdl.leftMargin = px(32);
+        rdl.topMargin = px(76);
+        addView(radarBox, rdl);
+        radarHold = new FrameLayout(a);
+        radarBox.addView(radarHold, new LinearLayout.LayoutParams(-1, 0, 1f));
         termPrompt = text("", 20, false);
         termLogo = text(logoText(), 8, false);
         termLogo.setLineSpacing(0, 1.15f);
@@ -629,7 +642,7 @@ final class HomeV29 extends FrameLayout {
         for (View b : barIcons) tint(b, t.fgBright);
         tip.setBackgroundColor(Theme.withAlpha(t.bg, 0.98f));
         tip.setTextColor(t.fgBright);
-        for (BoxView b : new BoxView[]{term, wxBox, pcBox, aiBoxRef, depBox, raceBox, appWin, tvWin, appsWin, pcWin, sysWin, grokbotBox}) b.setColors(winBg, t.muted, t.accent, t.cyan);
+        for (BoxView b : new BoxView[]{term, radarBox, wxBox, pcBox, aiBoxRef, depBox, raceBox, appWin, tvWin, appsWin, pcWin, sysWin, grokbotBox}) b.setColors(winBg, t.muted, t.accent, t.cyan);
         barSpacex.setTextColor(t.accent2);
         barSpacex.setVisibility(c.pluginSpacexTv ? VISIBLE : GONE);
         grokbotEyes.setTextColor(t.accent);
@@ -654,10 +667,12 @@ final class HomeV29 extends FrameLayout {
         wxl.leftMargin = c.wRacing ? px(16) : 0;
         wxBox.setLayoutParams(wxl);
         LayoutParams wl = (LayoutParams) widgets.getLayoutParams();
-        wl.width = px(widgetsWidth(c.wRacing, c.wTerm));
+        wl.width = px(widgetsWidth(c.wRacing, c.wTerm || c.wRadar));   // the radar box takes the term box's place
         widgets.setLayoutParams(wl);
         applyRaceColumns(c);
-        term.setVisibility(activeWs == 1 && c.wTerm ? VISIBLE : GONE);
+        term.setVisibility(activeWs == 1 && termOn(c.wTerm, c.wRadar) ? VISIBLE : GONE);
+        radarBox.setLegend("radar · " + c.pulsePlanesNm + " nm", px(10), px(10));
+        syncRadar();
         if (editPanel == null) post(() -> applyPanelPos(c));
         gridName.setTextColor(t.accent);
         gridHints.setTextColor(t.fg);
@@ -1225,7 +1240,8 @@ final class HomeV29 extends FrameLayout {
         if (movingApp >= 0) host.finishMove(false);
         activeWs = n;
         boolean home = n == 1;
-        term.setVisibility(home && (cfg == null || cfg.wTerm) ? VISIBLE : GONE);
+        term.setVisibility(home && (cfg == null || termOn(cfg.wTerm, cfg.wRadar)) ? VISIBLE : GONE);
+        syncRadar();
         widgets.setVisibility(home ? VISIBLE : GONE);
         appWin.setVisibility(home ? VISIBLE : GONE);
         grokbotBox.setVisibility(home && (cfg == null ? false : CompanionPlacement.homeTile(cfg.pluginGrokbot, cfg.companionOverlay)) ? VISIBLE : GONE);
@@ -2005,6 +2021,28 @@ final class HomeV29 extends FrameLayout {
     static final int HOME_W = 1920, HOME_MARGIN = 32, TERM_W = 640, WIDGET_GAP = 16, WIDGETS_W = 1120, RACE_COL_W = 268,
             RACE_COL_FULL_W = (WIDGETS_W - 32) / 3;   // 362: the 2.15.0 racing column, where every name fits
 
+    /** The radar box: the term box's corner and width, down to just above the app row. */
+    static final int RADAR_W = TERM_W, RADAR_H = 600;
+
+    /** The term box and the radar box share one corner: with the radar on, the term box is off. */
+    static boolean termOn(boolean term, boolean radar) {
+        return term && !radar;
+    }
+
+    /** The radar box shows on workspace 1 with homeWidgets.radar on; its page runs only then (RadarWidget). */
+    void syncRadar() {
+        boolean on = activeWs == 1 && cfg != null && cfg.wRadar;
+        radarBox.setVisibility(on ? VISIBLE : GONE);
+        RadarWidget.sync(act, radarHold, on);
+    }
+
+    /** From MainActivity.onResume. */
+    void resumeRadar() {
+        boolean on = activeWs == 1 && cfg != null && cfg.wRadar;
+        radarBox.setVisibility(on ? VISIBLE : GONE);
+        RadarWidget.onResume(act, radarHold, on);
+    }
+
     /** Right-aligned widgets row width in design px. With racing on, the row uses the space from the term gutter to the right margin (1200), never the term box. */
     static int widgetsWidth(boolean racing) {
         if (!racing) return WIDGETS_W;
@@ -2047,7 +2085,7 @@ final class HomeV29 extends FrameLayout {
 
     private void applyRaceColumns(LauncherConfig c) {
         boolean racing = c.wRacing;
-        float raceW = raceColWidth(c.wTerm, c.wWeather, c.wPc, c.wAi), side = sideColWidth(racing), weather = weatherColWidth(racing);
+        float raceW = raceColWidth(c.wTerm || c.wRadar, c.wWeather, c.wPc, c.wAi), side = sideColWidth(racing), weather = weatherColWidth(racing);
         LinearLayout.LayoutParams rl = (LinearLayout.LayoutParams) raceBox.getLayoutParams();
         rl.width = px(raceW);
         rl.weight = 0f;

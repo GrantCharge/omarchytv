@@ -23,7 +23,10 @@
   function saved(k, d) { try { var v = root.localStorage.getItem("radar." + k); return v == null ? d : v; } catch (e) { return d; } }
   function save(k, v) { try { root.localStorage.setItem("radar." + k, String(v)); } catch (e) {} }
 
-  var rangeI = C.RANGES.indexOf(Number(saved("range", cfg.range || 200)));
+  // The box on Home (RadarWidget): no remote, no card; the range is the config's, the marks are drawn bigger.
+  var widget = !!cfg.widget;
+  if (widget) doc.documentElement.className = "widget";
+  var rangeI = C.RANGES.indexOf(Number(widget ? cfg.range || 200 : saved("range", cfg.range || 200)));
   if (rangeI < 0) rangeI = C.RANGES.length - 1;
   var style = saved("map", cfg.map || "terrain");
   if (C.STYLES.indexOf(style) < 0) style = "terrain";
@@ -38,9 +41,10 @@
   var YELLOW = "#f8d21c", YELLOW_EDGE = "#2b2500", RED = "#ff4438", RED_EDGE = "#3a0600";
 
   var cv = $("map"), g = cv.getContext("2d"), mapC = doc.createElement("canvas"), mg = mapC.getContext("2d");
-  var W = 0, H = 0, dpr = 1, V = null, mapDirty = true;
+  var W = 0, H = 0, U = 0, dpr = 1, V = null, mapDirty = true;
   function resize() {
     W = root.innerWidth || 1280; H = root.innerHeight || 720;
+    U = widget ? H * 1.45 : H;   // the unit sizes are drawn in: the box is small, its marks stay readable
     dpr = Math.max(1, Math.min(2, root.devicePixelRatio || 1));
     cv.width = mapC.width = Math.round(W * dpr); cv.height = mapC.height = Math.round(H * dpr);
     V = hasLoc ? C.view(lat0, lon0, C.RANGES[rangeI], W, H) : null;
@@ -125,7 +129,7 @@
     if (m[1]) drawTiles(c, m[1], ts);
     // the rings: every quarter of the range, the outer one stronger
     var steps = 4, home = V.project(lat0, lon0);
-    c.font = "500 " + Math.round(H * 0.0185) + "px Roboto, sans-serif"; c.textAlign = "center"; c.textBaseline = "middle";
+    c.font = "500 " + Math.round(U * 0.0185) + "px Roboto, sans-serif"; c.textAlign = "center"; c.textBaseline = "middle";
     for (i = 1; i <= steps; i++) {
       var nm = V.range * i / steps, rad = nm * V.pxPerNm;
       c.beginPath(); c.arc(home[0], home[1], rad, 0, Math.PI * 2);
@@ -135,19 +139,19 @@
     }
     c.setLineDash([]);
     // the airports, the big ones named first
-    var boxes = [], pr = H * 0.0125;
-    c.font = "700 " + Math.round(H * 0.019) + "px Roboto, sans-serif"; c.textBaseline = "top";
+    var boxes = [], pr = U * 0.0125;
+    c.font = "700 " + Math.round(U * 0.019) + "px Roboto, sans-serif"; c.textBaseline = "top";
     airports.slice().sort(function (a, b) { return (b.big ? 1 : 0) - (a.big ? 1 : 0); }).forEach(function (a) {
       var q = V.project(a.lat, a.lon);
       if (q[0] < -20 || q[0] > W + 20 || q[1] < -20 || q[1] > H + 40) return;
       drawPin(c, q[0], q[1], a.big ? pr : pr * 0.8);
-      var tw = c.measureText(a.iata).width, bx = [q[0] - tw / 2 - 2, q[1] + 2, tw + 4, H * 0.024];
+      var tw = c.measureText(a.iata).width, bx = [q[0] - tw / 2 - 2, q[1] + 2, tw + 4, U * 0.024];
       for (var k = 0; k < boxes.length; k++) if (over(bx, boxes[k])) return;
       boxes.push(bx);
       halo(c, a.iata, q[0], q[1] + 3, "#fff", "rgba(0,0,0,0.75)", 3);
     });
     // the home
-    c.beginPath(); c.arc(home[0], home[1], H * 0.008, 0, Math.PI * 2); c.fillStyle = "#fff"; c.fill();
+    c.beginPath(); c.arc(home[0], home[1], U * 0.008, 0, Math.PI * 2); c.fillStyle = "#fff"; c.fill();
     c.lineWidth = 2; c.strokeStyle = "#2f80d3"; c.stroke();
     $("credit").textContent = m[2];
     mapDirty = false;
@@ -172,7 +176,7 @@
 
   // ------------------------------------------------------------------ the planes
   var planes = {}, list = [], sel = "", trails = {}, info = {}, routes = {}, lookQ = [], adsb = [], adsbAt = 0, os = [], osAt = 0;
-  var osEvery = cfg.openskyAuth ? 60 : 480;
+  var osEvery = cfg.openskyAuth ? (widget ? 120 : 60) : 480;   // the box is on screen for hours: half the reads
   var types = {};
   try { types = JSON.parse(saved("types", "{}")) || {}; } catch (e) { types = {}; }
   function nowS() { return Date.now() / 1000; }
@@ -278,7 +282,7 @@
     g.setTransform(1, 0, 0, 1, 0, 0);
     g.drawImage(mapC, 0, 0);
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
-    var base = H * 0.05, boxes = [], shown = [];
+    var base = U * 0.05, boxes = [], shown = [];
     for (i = 0; i < list.length; i++) {
       var p = list[i], here = C.now(p, t);
       p.la += (here[0] - p.la) * 0.4; p.lo += (here[1] - p.lo) * 0.4;   // a new position is eased in, not jumped to
@@ -307,8 +311,8 @@
       boxes.push([s.x - size * 0.4, s.y - size * 0.4, size * 0.8, size * 0.8]);
     }
     // the names: the picked one first, then the others where there is room
-    g.font = "600 " + Math.round(H * 0.0195) + "px Roboto, sans-serif"; g.textAlign = "left"; g.textBaseline = "middle";
-    var th = H * 0.025;
+    g.font = "600 " + Math.round(U * 0.0195) + "px Roboto, sans-serif"; g.textAlign = "left"; g.textBaseline = "middle";
+    var th = U * 0.025;
     shown.slice().reverse().forEach(function (s2) {
       var tw = g.measureText(s2.name).width, x = s2.x + s2.size * 0.52, y = s2.y + s2.size * 0.3, k;
       var cands = [[x, y], [s2.x - s2.size * 0.52 - tw, y], [x, s2.y - s2.size * 0.4], [s2.x - tw / 2, s2.y + s2.size * 0.72]], put = null;
@@ -334,7 +338,7 @@
       g.beginPath(); g.moveTo(o[0], o[1]); g.lineTo(f[0], f[1]);
       g.strokeStyle = "rgba(255,255,255,0.35)"; g.lineWidth = 2; g.setLineDash([2, 6]); g.stroke(); g.setLineDash([]);
     }
-    g.lineWidth = Math.max(2.5, H * 0.0045);
+    g.lineWidth = Math.max(2.5, U * 0.0045);
     for (i = 1; i <= tr.length; i++) {
       var a = tr[i - 1], b = i < tr.length ? tr[i] : [p.la, p.lo, p.alt || 0], qa = V.project(a[0], a[1]), qb = V.project(b[0], b[1]);
       g.beginPath(); g.moveTo(qa[0], qa[1]); g.lineTo(qb[0], qb[1]);
@@ -400,7 +404,7 @@
 
   // ------------------------------------------------------------------ the remote
   function key(k) {
-    if (!V) return k === "back" ? "false" : "true";
+    if (!V || widget) return k === "back" ? "false" : "true";
     if (k === "left" || k === "right") {
       var on = list.filter(function (p) { return p.x > 0 && p.x < W && p.y > 0 && p.y < H; });
       select(C.pick(on, sel, k === "right" ? 1 : -1));
@@ -433,11 +437,11 @@
   } else {
     bar();
     pollAdsb(); pollOs();
-    root.setInterval(function () { if (!paused) pollAdsb(); }, 12000);
+    root.setInterval(function () { if (!paused) pollAdsb(); }, widget ? 20000 : 12000);
     root.setInterval(function () { if (!paused) pollOs(); }, osEvery * 1000);
-    root.setInterval(function () { if (!paused) lookup(); }, 2500);
+    root.setInterval(function () { if (!paused) lookup(); }, widget ? 10000 : 2500);   // the box only needs the types, for the silhouettes
     root.setInterval(function () { if (!paused) bar(); }, 1000);
-    root.setInterval(function () { if (!paused) draw(); }, 250);
+    root.setInterval(function () { if (!paused) draw(); }, widget ? 1000 : 250);
   }
   root.__radar = { planes: function () { return list; }, view: function () { return V; }, cfg: cfg };
 })(window);

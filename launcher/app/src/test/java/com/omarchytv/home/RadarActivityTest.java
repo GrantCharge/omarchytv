@@ -41,6 +41,23 @@ public class RadarActivityTest {
     }
 
     @Test
+    public void theHomeBoxTakesTheTermBoxsPlace() throws Exception {
+        assertTrue(HomeV29.termOn(true, false));
+        assertFalse("one corner, one box", HomeV29.termOn(true, true));
+        assertFalse(HomeV29.termOn(false, false));
+        assertEquals(HomeV29.TERM_W, HomeV29.RADAR_W);
+        // with the radar box on, the widgets row keeps clear of that corner as it does of the term box
+        assertEquals(HomeV29.widgetsWidth(true, true), HomeV29.widgetsWidth(true, false || true));
+        String src = new String(Files.readAllBytes(new File("src/main/java/com/omarchytv/home/RadarWidget.java").toPath()), StandardCharsets.UTF_8);
+        assertTrue("never a crash loop", src.contains("deaths >= MAX_DEATHS"));
+        assertTrue("nothing runs behind other apps", src.contains("static void onPause()"));
+        assertTrue(src.contains("w.setFocusable(false)"));
+        assertTrue(src.contains("PulseSaver.proxy("));
+        String main = new String(Files.readAllBytes(new File("src/main/java/com/omarchytv/home/MainActivity.java").toPath()), StandardCharsets.UTF_8);
+        assertEquals("onPause and onDestroy", 2, main.split("RadarWidget\\.onPause\\(\\)", -1).length - 1);
+    }
+
+    @Test
     public void theRemotesKeys() {
         assertEquals("left", RadarActivity.keyName(KeyEvent.KEYCODE_DPAD_LEFT));
         assertEquals("right", RadarActivity.keyName(KeyEvent.KEYCODE_DPAD_RIGHT));
