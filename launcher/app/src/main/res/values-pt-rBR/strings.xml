@@ -465,6 +465,8 @@
     <string name="arcade_sound">Som do fliperama</string>
     <string name="arcade_pc_theme">Fliperama: RICE WARS muda o tema do PC também</string>
     <string name="arcade_crashed">O fliperama parou de funcionar</string>
+    <string name="radar_crashed">O radar parou de funcionar</string>
+    <string name="radar_hint">Os aviões ao seu redor, ao vivo</string>
     <string name="share_qr">QR code do OmarchyTV</string>
     <string name="cine_sources">fontes</string>
     <string name="cine_library">biblioteca</string>

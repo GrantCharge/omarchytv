@@ -465,6 +465,8 @@
     <string name="arcade_sound">Dźwięk salonu gier</string>
     <string name="arcade_pc_theme">Salon gier: RICE WARS zmienia też motyw PC</string>
     <string name="arcade_crashed">Salon gier przestał działać</string>
+    <string name="radar_crashed">Radar przestał działać</string>
+    <string name="radar_hint">Samoloty wokół ciebie, na żywo</string>
     <string name="share_qr">Kod QR OmarchyTV</string>
     <string name="cine_sources">źródła</string>
     <string name="cine_library">biblioteka</string>

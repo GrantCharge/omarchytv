@@ -616,6 +616,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
             case "arcade":   // v2.14: top-bar icon next to Cinemarchy
                 ArcadeActivity.open(this);
                 break;
+            case "radar":
+                RadarActivity.open(this);
+                break;
             case "grok-bot":
                 showMenu("grok-bot", null);
                 break;
@@ -780,6 +783,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
         items.add(new Walker.Item("X (x.com)", tApp, () -> WebAppActivity.open(this, LauncherConfig.X_WEBAPP)));
         if (cfg.pluginOmastorm) items.add(new Walker.Item("⛈ Omastorm (radar)", tApp, this::openOmastorm));
         items.add(new Walker.Item("🕹 OmarchyTV Arcade (V-HOLD · RICE WARS · FORK BOMB)", tApp, () -> ArcadeActivity.open(this)));
+        items.add(new Walker.Item("✈ Radar (planes around you, live)", tApp, () -> RadarActivity.open(this)));
         items.add(new Walker.Item("🎬 Cinemarchy (Media, Streaming, Live TV & Snippets)", str(R.string.cinemarchy_hub), () -> open(new Intent(this, CinemarchyActivity.class))));
         items.add(new Walker.Item("Aquarium Screensaver (Omarchy Cyber-TUI Ocean)", str(R.string.menu_screensaver), () -> {
             LauncherConfig.update(this, j -> screensaver(j).put("art", "aquarium").put("mode", "aquarium"));
@@ -860,6 +864,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
                 if (walker != null) walker.close();
                 if (menu != null && menu.isShowing()) menu.dismiss();
                 ArcadeActivity.open(this);
+                break;
+            case "radar":   // the plane radar on a remote key
+                if (walker != null) walker.close();
+                if (menu != null && menu.isShowing()) menu.dismiss();
+                RadarActivity.open(this);
                 break;
             case "grokbot":   // v2.15 (#91): a key remapper can bind any key to the Grok Bot companion (Philips: Blue)
                 if (walker != null) walker.close();
@@ -1001,6 +1010,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
     protected void onResume() {
         super.onResume();
         BootScreenView.onResume(this, findViewById(R.id.root));
+        if (home != null) home.resumeRadar();   // the "radar" home widget, only while Home is in front
         OmaFireLayer.onResume(this, findViewById(R.id.wallpaper));   // v2.14 OmaFire animated wallpaper   // "wake" mode: replay after the screen came on
         bindCompanion();
         OmarchyLink.sweepCasts(this);   // 24 h cleanup of cast uploads (no-op when nothing was ever cast)
@@ -1104,6 +1114,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
         super.onPause();
         if (companion != null) { companion.setArmed(false); companion.stop(); }
         OmaFireLayer.onPause();
+        RadarWidget.onPause();
         resumed = false;
         OmarchyLink.setHomeVisible(false);
         handler.removeCallbacks(idle);
@@ -1125,6 +1136,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
         BootScreenView.onDestroy(this);
         LiftoffView.onDestroy();
         OmaFireLayer.onPause();
+        RadarWidget.onPause();
         ConnectivityManager cm = getSystemService(ConnectivityManager.class);
         if (cm != null) cm.unregisterNetworkCallback(networkCallback);
         OmarchyLink.removeListener(linkListener);
@@ -1668,6 +1680,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
             case "next-theme": return str(R.string.keys_action_next_theme);
             case "cinemarchy": return "🎬 Cinemarchy";   // product names: the same in every language
             case "arcade": return "🕹 OmarchyTV Arcade";
+            case "radar": return "✈ Radar";
             case "grokbot": return "● Grok Bot";
             case "terminal": return "▌ Grok terminal";
             default: return id;
@@ -1944,6 +1957,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
         // v2.14 OmarchyTV Arcade: V-HOLD, RICE WARS, FORK BOMB (assets/games, the same as on LG/Samsung).
         p.add("🕹 OmarchyTV Arcade", "V-HOLD · RICE WARS · FORK BOMB ›", r -> {
             handler.post(() -> ArcadeActivity.open(this));
+            return false;
+        });
+        // The plane radar (assets/radar): the planes around the TV's place on a map, live.
+        p.add("✈ Radar", str(R.string.radar_hint) + " ›", r -> {
+            handler.post(() -> RadarActivity.open(this));
             return false;
         });
         return p;
@@ -3369,7 +3387,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
 
     private AsciiMenu.Page screensaverPage() {
         LauncherConfig cfg = LauncherConfig.get(this);
-        String[] logos = {"pulse", "aquarium", "aquarium-classic", "omarchy-tv", "omarchy", "cinemarchy", "original"};
+        String[] logos = {"pulse", "radar", "aquarium", "aquarium-classic", "omarchy-tv", "omarchy", "cinemarchy", "original"};
         String[] sizes = {"small", "medium", "large"};
         String lLogo = str(R.string.set_logo), lSize = str(R.string.ss_size), lClock = str(R.string.ss_clock);
         AsciiMenu.Page p = new AsciiMenu.Page(str(R.string.menu_screensaver));
@@ -3408,6 +3426,34 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
             p.add(lPanels, "›", r -> {
                 push(pulsePanelsPage());
                 return false;
+            });
+        }
+        if ("radar".equals(cfg.screensaverArt)) {   // the radar saver: map, range, plane tour, remote hints
+            String[] maps = {"terrain", "dark", "streets", "drawn"};
+            String lMap = str(R.string.ss_radar_map);
+            p.add(lMap, cfg.radarMap, r -> {
+                String n = next(maps, cfg.radarMap);
+                applyLive("screensaver", lMap, j -> screensaver(j).put("radarMap", n));
+                return true;
+            });
+            Integer[] ranges = {25, 50, 100, 200, 300, 400, 500};
+            String lRange = str(R.string.ss_radar_range);
+            p.add(lRange, cfg.radarRange + " nm", r -> {
+                Integer n = next(ranges, cfg.radarRange);
+                applyLive("screensaver", lRange, j -> screensaver(j).put("radarRange", n));
+                return true;
+            });
+            String lTour = str(R.string.ss_radar_tour);
+            p.add(lTour, str(cfg.radarTour ? R.string.on : R.string.off), r -> {
+                boolean n = !cfg.radarTour;
+                applyLive("screensaver", lTour, j -> screensaver(j).put("radarTour", n));
+                return true;
+            });
+            String lHints = str(R.string.ss_radar_hints);
+            p.add(lHints, str(cfg.radarHints ? R.string.on : R.string.off), r -> {
+                boolean n = !cfg.radarHints;
+                applyLive("screensaver", lHints, j -> screensaver(j).put("radarHints", n));
+                return true;
             });
         }
         if (cfg.hasSsBefore) {   // v2.15: undo the one-time switch to Pulse
@@ -3586,8 +3632,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
                 lOff = str(R.string.ai_offline_row);
         // v2.10: each home widget can be switched off ("No" really hides it); the clock widget is gone (bar only).
         String[][] hw = {{"term", str(R.string.v210_w_term)}, {"weather", str(R.string.v210_w_weather)}, {"pc", str(R.string.v210_w_pc)},
-                {"ai", str(R.string.v210_w_ai)}, {"deploys", str(R.string.v210_w_deploys)}, {"racing", str(R.string.w_racing)}};
-        boolean[] hwOn = {cfg.wTerm, cfg.wWeather, cfg.wPc, cfg.wAi, cfg.wDeploys, cfg.wRacing};
+                {"ai", str(R.string.v210_w_ai)}, {"deploys", str(R.string.v210_w_deploys)}, {"racing", str(R.string.w_racing)},
+                {"radar", str(R.string.w_radar)}};
+        boolean[] hwOn = {cfg.wTerm, cfg.wWeather, cfg.wPc, cfg.wAi, cfg.wDeploys, cfg.wRacing, cfg.wRadar};
         for (int i = 0; i < hw.length; i++) {
             final String id = hw[i][0], label = hw[i][1];
             final boolean on = hwOn[i];
@@ -3998,6 +4045,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
 
     private String logoLabel(String l) {
         if ("pulse".equals(l)) return "Omarchy Pulse";
+        if ("radar".equals(l)) return "Plane radar";
         if ("aquarium".equals(l)) return "Omarchy Aquarium (homage)";
         if ("aquarium-classic".equals(l)) return "Aquarium Classic";
         if ("cinemarchy".equals(l)) return "CINEMARCHY";

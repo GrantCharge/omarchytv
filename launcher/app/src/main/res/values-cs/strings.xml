@@ -465,6 +465,8 @@
     <string name="arcade_sound">Zvuk herny</string>
     <string name="arcade_pc_theme">Herna: RICE WARS mění motiv i na PC</string>
     <string name="arcade_crashed">Herna přestala fungovat</string>
+    <string name="radar_crashed">Radar přestal fungovat</string>
+    <string name="radar_hint">Letadla kolem vás, živě</string>
     <string name="share_qr">QR kód OmarchyTV</string>
     <string name="cine_sources">zdroje</string>
     <string name="cine_library">knihovna</string>

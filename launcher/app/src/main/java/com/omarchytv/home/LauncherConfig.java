@@ -58,7 +58,7 @@ final class LauncherConfig {
     static final int LONG_PRESS = 3;
     /** OmarchyTV actions a key can run (see MainActivity.runKeyAction). */
     static final String[] KEY_ACTIONS = {"walker", "voice", "home", "ask", "menu", "screensaver", "next-theme",
-            "cinemarchy", "arcade", "grokbot", "terminal",   // v2.15 (#91): the Grok Bot companion, e.g. for Philips TVs whose Blue key opens the manual
+            "cinemarchy", "arcade", "radar", "grokbot", "terminal",   // v2.15 (#91): the Grok Bot companion, e.g. for Philips TVs whose Blue key opens the manual
             "workspace-1", "workspace-2", "workspace-3", "workspace-4", "workspace-5"};
 
     /** Maps a key name without the KEYCODE_ prefix to an Android keycode; 0 or less = unknown. */
@@ -501,6 +501,12 @@ final class LauncherConfig {
      *  panel (screensaver.earthquakes, default on) and OpenSky as a second plane feed (screensaver.opensky, default off). */
     final int pulsePlanesNm;
     final boolean pulseQuakes, pulseOpensky;
+    /** The radar screensaver (screensaver.art "radar"): its map style (radarMap: terrain, dark, streets, drawn), its range
+     *  in nm (radarRange: 25, 50, 100, 200, 300, 400, 500), the plane tour (radarTour: a new plane's card every 15 s, default on) and
+     *  the remote hints at the bottom (radarHints, default on). */
+    final String radarMap;
+    final int radarRange;
+    final boolean radarTour, radarHints;
     /** 2.15.1 Pulse's racing side panel (screensaver.racing; default: on when the Home racing widget is on). */
     final boolean pulseRacing;
     /** 2.15.1 which Pulse side panels show (screensaver.pulsePanels). Missing keys are on. */
@@ -554,6 +560,8 @@ final class LauncherConfig {
     /** "racing" home widget (remaining 2026 F1 + MotoGP weekends, homeWidgets.racing, default off) and its
      *  countdown in the bar (racing.bar; 2.15.1: off unless set, the panel has its own countdown). */
     final boolean wRacing, barRacing;
+    /** "radar" home widget (the plane radar in a box at the top left, homeWidgets.radar, default off). */
+    final boolean wRadar;
     /** omarchytv.json racing.timezone: the zone session times are shown in (default Asia/Bangkok). */
     final String racingTz;
     /** 2.15 omarchytv.json racing.series: the series the widget follows (Racing.SERIES ids), default f1 and motogp. */
@@ -829,6 +837,12 @@ final class LauncherConfig {
         pulsePanels = java.util.Collections.unmodifiableMap(pulsePanelMap);
         pulseQuakes = pulsePanelMap.containsKey("earthquakes") ? pulsePanelMap.get("earthquakes") : (ss == null || ss.optBoolean("earthquakes", true));
         pulseOpensky = ss != null && ss.optBoolean("opensky", false);
+        String rm = ss != null ? ss.optString("radarMap", "terrain") : "terrain";
+        radarMap = Arrays.asList("terrain", "dark", "streets", "drawn").contains(rm) ? rm : "terrain";
+        int rr = ss != null ? ss.optInt("radarRange", 100) : 100;
+        radarRange = rr == 25 || rr == 50 || rr == 200 || rr == 300 || rr == 400 || rr == 500 ? rr : 100;
+        radarTour = ss == null || ss.optBoolean("radarTour", true);
+        radarHints = ss == null || ss.optBoolean("radarHints", true);
         screensaverMode = ssMode;
         boolean defSsClock = c != null && c.getResources().getBoolean(R.bool.screensaver_clock);
         screensaverClock = ss != null ? ss.optBoolean("clock", defSsClock) : defSsClock;
@@ -864,6 +878,7 @@ final class LauncherConfig {
         wDeploys = hw == null || hw.optBoolean("deploys", true);
         wTerm = hw == null || hw.optBoolean("term", true);
         wRacing = hw != null && hw.optBoolean("racing", false);   // opt-in: a new widget never appears unasked
+        wRadar = hw != null && hw.optBoolean("radar", false);
         JSONObject rc = j != null ? j.optJSONObject("racing") : null;
         barRacing = rc != null && rc.optBoolean("bar", false);   // 2.15.1: off unless asked (the countdown is in the panel now)
         racingTz = rc != null && !rc.optString("timezone", "").trim().isEmpty() ? rc.optString("timezone").trim() : "";   // 2.15: "" = the TV's own zone

@@ -465,6 +465,8 @@
     <string name="arcade_sound">Spelhallsljud</string>
     <string name="arcade_pc_theme">Spelhall: RICE WARS byter även tema på datorn</string>
     <string name="arcade_crashed">Spelhallen slutade fungera</string>
+    <string name="radar_crashed">Radarn slutade fungera</string>
+    <string name="radar_hint">Flygplanen omkring dig, live</string>
     <string name="share_qr">OmarchyTV-QR-kod</string>
     <string name="cine_sources">källor</string>
     <string name="cine_library">bibliotek</string>

@@ -465,6 +465,8 @@
     <string name="arcade_sound">Speelhalgeluid</string>
     <string name="arcade_pc_theme">Speelhal: RICE WARS wijzigt ook het pc-thema</string>
     <string name="arcade_crashed">De speelhal werkt niet meer</string>
+    <string name="radar_crashed">De radar werkt niet meer</string>
+    <string name="radar_hint">Vliegtuigen om je heen, live</string>
     <string name="share_qr">OmarchyTV-QR-code</string>
     <string name="cine_sources">bronnen</string>
     <string name="cine_library">bibliotheek</string>

@@ -465,6 +465,8 @@
     <string name="arcade_sound">Sunetul sălii de jocuri</string>
     <string name="arcade_pc_theme">Sala de jocuri: RICE WARS schimbă și tema PC-ului</string>
     <string name="arcade_crashed">Sala de jocuri s-a oprit</string>
+    <string name="radar_crashed">Radarul a încetat să funcționeze</string>
+    <string name="radar_hint">Avioanele din jurul tău, în direct</string>
     <string name="share_qr">Cod QR OmarchyTV</string>
     <string name="cine_sources">surse</string>
     <string name="cine_library">bibliotecă</string>

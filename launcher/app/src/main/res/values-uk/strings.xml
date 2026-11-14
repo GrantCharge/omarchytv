@@ -465,6 +465,8 @@
     <string name="arcade_sound">Звук ігрової зали</string>
     <string name="arcade_pc_theme">Ігрова зала: RICE WARS змінює і тему ПК</string>
     <string name="arcade_crashed">Ігрова зала перестала працювати</string>
+    <string name="radar_crashed">Радар перестав працювати</string>
+    <string name="radar_hint">Літаки навколо вас, наживо</string>
     <string name="share_qr">QR-код OmarchyTV</string>
     <string name="cine_sources">джерела</string>
     <string name="cine_library">бібліотека</string>

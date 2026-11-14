@@ -101,6 +101,36 @@ else from the fetch), so a dead source never shows old numbers as current. No ur
 status icons (same data and location as the weather widget). Combine with `"homeWidgets": {"weather": false}`
 to keep only the bar version.
 
+### Radar: the planes around you
+
+`✈ Radar` (the settings menu, the search, or a remote key bound to the action `radar`) opens a full-screen map
+centred on the Weather place with the planes around it, live: ◀ ▶ pick a plane (a card shows its photo, airline,
+route, type, altitude and speed), ▲ ▼ change the range (25, 50, 100, 200 nm), OK changes the map (satellite, dark,
+streets, drawn), Back closes the card and then leaves. The planes are the Pulse screensaver's (adsb.lol and adsbdb,
+plus OpenSky with `"screensaver": {"opensky": true}`), read through the launcher; the first range is
+`screensaver.planesNm`. Map pictures are read from Esri's public tile service; the drawn map needs no network.
+
+`"homeWidgets": {"radar": true}` (default off; also Settings → Widgets) puts the same radar in a large box at the top
+left of Home, in the term box's place (the term box is off while it is on). The box has no focus and no keys, reads
+the planes less often than the full screen, and runs only while Home is in front.
+
+```json
+"homeWidgets": { "radar": true }
+```
+
+The radar is also a screensaver: Settings → Screensaver → Logo → `Plane radar` (`"screensaver": {"art": "radar"}`).
+It is the full-screen map with the same remote as the radar screen: ◀ ▶ pick a plane, ▲ ▼ change the range, OK
+changes the map; Back (or any other key) closes it. A range or map picked with the remote is kept. With the plane
+tour on, every 15 s the next plane in the air gets its card (a plane picked by hand stays a minute); with it off, no
+plane is picked for you. With no Weather place set, the screensaver falls back to the native logo.
+
+Settings → Screensaver shows four more rows while Plane radar is picked: radar map (terrain, dark, streets, drawn),
+radar range (25, 50, 100, 200, 300, 400, 500 nm; past 250 nm the planes come from seven adsb.lol reads every 30 s), radar plane tour (on/off) and radar remote hints (the bar at the bottom, on/off).
+
+```json
+"screensaver": { "art": "radar", "radarMap": "terrain", "radarRange": 100, "radarTour": true, "radarHints": true }
+```
+
 ### Racing: F1 and MotoGP 2026
 
 `"homeWidgets": {"racing": true}` (default off; also Settings → Widgets) adds a `racing` panel as the first column of
@@ -346,7 +376,7 @@ otherwise OK opens Live TV (Android has no public "tune to number" intent).
   Key names are Android `KeyEvent` keycode names without `KEYCODE_` (`BUTTON_12`, ...); unknown names are ignored. A press type has exactly one of `app` (package name, started like its tile), `intent` (an
   `Intent.toUri(Intent.URI_INTENT_SCHEME)` string: started as an activity, sent as a broadcast if no activity
   matches) or `action` (an OmarchyTV action id); anything else counts as unbound. Action ids: `walker` (search),
-  `voice` (search by voice), `home`, `ask`, `menu`, `screensaver`, `next-theme`, `cinemarchy`, `arcade`, `grokbot` (the Grok Bot
+  `voice` (search by voice), `home`, `ask`, `menu`, `screensaver`, `next-theme`, `cinemarchy`, `arcade`, `radar` (the plane radar), `grokbot` (the Grok Bot
   companion), `workspace-1` … `workspace-5`. On TVs whose firmware takes the Blue key first (Philips: the TV manual,
   [#91](https://github.com/piermark/omarchytv/issues/91)), bind Blue in a key remapper to
   `adb shell am start -n com.omarchytv.home/.MainActivity --es com.omarchytv.home.extra.ACTION grokbot`.
