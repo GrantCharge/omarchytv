@@ -116,6 +116,11 @@ final class TteSaver {
                 h.post(() -> toNative("pagina: " + why));
             }
         }, "OmarchySaver");
+        w.addJavascriptInterface(new Object() {   // radar.js reads OmarchyRadar.config()
+            @JavascriptInterface public String config() { return radarCfg(c.getApplicationContext()); }
+            @JavascriptInterface public void log(String m) { Log.i(TAG, "salvaschermo: " + m); }
+        }, "OmarchyRadar");
+        ws.setDomStorageEnabled(true);   // the radar keeps its range, map style and plane types
         w.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onConsoleMessage(ConsoleMessage m) {
@@ -151,6 +156,7 @@ final class TteSaver {
     /** Minimal WebViewAssetLoader: https://appassets.androidplatform.net/assets/... -> APK assets; nothing else loads. */
     private WebResourceResponse serve(Uri u) {
         if (PulseSaver.proxied(u)) return PulseSaver.proxy(ctx, u, "https://" + HOST);   // v2.15 Pulse's data services
+        if (RadarActivity.picture(u.getScheme(), u.getHost())) return null;   // the radar's map tiles and plane photos
         String path = u.getPath();
         if (!HOST.equals(u.getHost()) || path == null || !path.startsWith("/assets/") || path.contains("..")) {
             return new WebResourceResponse("text/plain", "utf-8", 404, "Not Found", null, null);
@@ -168,6 +174,15 @@ final class TteSaver {
             return r;
         } catch (Exception e) {
             return new WebResourceResponse("text/plain", "utf-8", 404, "Not Found", null, null);
+        }
+    }
+
+    /** RadarActivity.config with saver:true: the radar page as a screensaver (no remote, a card in turn). */
+    static String radarCfg(Context c) {
+        try {
+            return new org.json.JSONObject(RadarActivity.config(c)).put("saver", true).toString();
+        } catch (Exception e) {
+            return "{\"saver\":true}";
         }
     }
 
@@ -258,7 +273,8 @@ final class TteSaver {
         drawn = false;
         LauncherConfig cfg = LauncherConfig.get(ctx);
         boolean pulse = !cfg.living && "pulse".equals(cfg.screensaverArt) && !"native".equals(forceMode);   // v2.15
-        if (!pulse && !cfg.living && ("native".equals(forceMode) || AsciiSaverView.isAquarium(cfg))) {   // v2.14 Live needs the page
+        boolean radar = !cfg.living && "radar".equals(cfg.screensaverArt) && !"native".equals(forceMode);   // the plane radar
+        if (!pulse && !radar && !cfg.living && ("native".equals(forceMode) || AsciiSaverView.isAquarium(cfg))) {   // v2.14 Live needs the page
             toNative("aquarium/nativo");
             return;
         }
@@ -270,7 +286,7 @@ final class TteSaver {
             placeholder.start();
         }
         web.setAlpha(0f);
-        web.loadUrl("https://" + HOST + (pulse ? "/assets/pulse/index.html" : "/assets/saver/index.html"));
+        web.loadUrl("https://" + HOST + (pulse ? "/assets/pulse/index.html" : radar ? "/assets/radar/index.html" : "/assets/saver/index.html"));
         h.postDelayed(() -> {
             if (!drawn) toNative("nessun disegno entro " + drawTimeoutMs + " ms");
         }, drawTimeoutMs);

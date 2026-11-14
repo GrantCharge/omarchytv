@@ -118,6 +118,14 @@ the planes less often than the full screen, and runs only while Home is in front
 "homeWidgets": { "radar": true }
 ```
 
+The radar is also a screensaver: Settings → Screensaver → Logo → `Plane radar` (`"screensaver": {"art": "radar"}`).
+It is the full-screen map with no remote and no hint bar; every 15 s the next plane in the air gets its card. With no
+Weather place set, the screensaver falls back to the native logo.
+
+```json
+"screensaver": { "art": "radar" }
+```
+
 ### Racing: F1 and MotoGP 2026
 
 `"homeWidgets": {"racing": true}` (default off; also Settings → Widgets) adds a `racing` panel as the first column of

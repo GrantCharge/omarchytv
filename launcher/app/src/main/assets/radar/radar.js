@@ -26,6 +26,9 @@
   // The box on Home (RadarWidget): no remote, no card; the range is the config's, the marks are drawn bigger.
   var widget = !!cfg.widget;
   if (widget) doc.documentElement.className = "widget";
+  // The screensaver (TteSaver, screensaver.art "radar"): the full map, no remote, a plane's card in turn.
+  var saver = !widget && !!cfg.saver, saverHost = root.OmarchySaver || null;
+  if (saver) doc.documentElement.className = "saver";
   var rangeI = C.RANGES.indexOf(Number(widget ? cfg.range || 200 : saved("range", cfg.range || 200)));
   if (rangeI < 0) rangeI = C.RANGES.length - 1;
   var style = saved("map", cfg.map || "terrain");
@@ -404,7 +407,7 @@
 
   // ------------------------------------------------------------------ the remote
   function key(k) {
-    if (!V || widget) return k === "back" ? "false" : "true";
+    if (!V || widget || saver) return k === "back" ? "false" : "true";
     if (k === "left" || k === "right") {
       var on = list.filter(function (p) { return p.x > 0 && p.x < W && p.y > 0 && p.y < H; });
       select(C.pick(on, sel, k === "right" ? 1 : -1));
@@ -434,6 +437,7 @@
     $("msg").hidden = false;
     $("msg").textContent = "The radar needs to know where you are: set your place in Settings › Weather.";
     $("hint").hidden = true;
+    if (saver && saverHost && saverHost.fail) { try { saverHost.fail("radar: no place set"); } catch (e) {} }
   } else {
     bar();
     pollAdsb(); pollOs();
@@ -442,6 +446,17 @@
     root.setInterval(function () { if (!paused) lookup(); }, widget ? 10000 : 2500);   // the box only needs the types, for the silhouettes
     root.setInterval(function () { if (!paused) bar(); }, 1000);
     root.setInterval(function () { if (!paused) draw(); }, widget ? 1000 : 250);
+    if (saver) {
+      // a tour: every 15 s the next plane in the air gets its card, so the saver keeps moving
+      root.setInterval(function () {
+        if (paused) return;
+        var on = list.filter(function (p) { return !p.ground && p.x > 0 && p.x < W && p.y > 0 && p.y < H; });
+        select(on.length ? C.pick(on, sel, 1) : "");
+        draw();
+      }, 15000);
+      draw();
+      if (saverHost && saverHost.drawn) { try { saverHost.drawn("radar", list.length, "radar"); } catch (e) {} }
+    }
   }
   root.__radar = { planes: function () { return list; }, view: function () { return V; }, cfg: cfg };
 })(window);
