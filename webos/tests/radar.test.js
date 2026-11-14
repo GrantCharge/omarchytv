@@ -123,3 +123,21 @@ test("radar: the screensaver mode (saver:true) takes the remote, tours the plane
   assert.match(main, /String\[\] logos = \{"pulse", "radar",/);
   for (const k of ["radarMap", "radarRange", "radarTour", "radarHints"]) assert.match(main, new RegExp('put\\("' + k + '"'));
 });
+
+test("radar: the card's route bar, time to arrival and FR24-style tags", () => {
+  const r = { oLat: 8.11, oLon: 98.32, dLat: 37.46, dLon: 126.44 };   // HKT -> ICN
+  const p = C.progress(r, 8.4, 98.6, 296);
+  assert.ok(p.flown > 15 && p.flown < 30, "a few minutes out of Phuket");
+  assert.ok(p.left > 2250 && p.left < 2350, "about 2,300 nm to Seoul");
+  assert.ok(p.frac > 0 && p.frac < 0.02);
+  assert.ok(p.eta > 300 && p.eta < 330, "about 5:15 at cruise, not 7:50 at the climb speed");
+  assert.strictEqual(C.progress({}, 1, 2, 300), null);
+  assert.strictEqual(C.progress(r, 8.4, 98.6, 20).eta, null, "no time on the ground");
+  assert.strictEqual(C.hhmm(350), "05:50");
+  const js = fs.readFileSync(R + "radar.js", "utf8"), html = fs.readFileSync(R + "index.html", "utf8");
+  assert.match(js, /iata: f\.callsign_iata/);
+  assert.match(js, /"Arriving in " \+ C\.hhmm/);
+  assert.match(js, /row\("Barometric alt\."/);
+  assert.match(html, /id="tags"/);
+  assert.match(html, /id="progFill"/);
+});

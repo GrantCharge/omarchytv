@@ -35,8 +35,16 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #1d3640; c
 #route .city { font-size: 1.7vh; color: #b9bec4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 17vh; }
 #route .ap:last-child .city { margin-left: auto; }
 #route .mid { color: #f8d21c; font-size: 3vh; padding: 0 1vh; }
+#cs { display: inline-block; margin-right: 1vh; }
+#tags { display: inline-block; vertical-align: 0.6vh; }
+#tags i { font-style: normal; font-weight: 700; font-size: 1.8vh; background: #1b1b1b; color: #f8d21c; padding: 0.2vh 0.8vh; border-radius: 0.5vh; margin-right: 0.6vh; }
+#prog { padding: 0 1.8vh 1.2vh; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+#progBar { height: 0.7vh; background: rgba(255, 255, 255, 0.18); border-radius: 0.4vh; overflow: hidden; }
+#progFill { height: 100%; width: 0; background: #f8d21c; }
+#progText { display: flex; justify-content: space-between; font-size: 1.7vh; color: #b9bec4; margin-top: 0.6vh; }
 #rows { padding: 1vh 1.8vh 1.4vh; }
-#rows div { display: flex; justify-content: space-between; font-size: 2vh; line-height: 1.75; }
+#rows div { display: flex; justify-content: space-between; font-size: 1.85vh; line-height: 1.55; }
+#rows em { max-width: 30vh; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #rows span { color: #9aa0a7; }
 #rows em { font-style: normal; font-weight: 500; text-align: right; }
 /* the box on Home (RadarWidget): the map, the count and the credit only */
@@ -54,9 +62,10 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #1d3640; c
 <div id="clock" class="pill"></div>
 <div id="card" class="pill" hidden>
   <img id="photo" alt="" hidden><div id="photoBy" hidden></div>
-  <div id="head"><div id="cs"></div><div id="airline"></div></div>
+  <div id="head"><div id="cs"></div><div id="tags"></div><div id="airline"></div></div>
   <div id="route" hidden><div class="ap"><div class="code" id="from"></div><div class="city" id="fromCity"></div></div><div class="mid">✈</div>
     <div class="ap"><div class="code" id="to"></div><div class="city" id="toCity"></div></div></div>
+  <div id="prog" hidden><div id="progBar"><div id="progFill"></div></div><div id="progText"><span id="flown"></span><span id="left"></span></div></div>
   <div id="rows"></div>
 </div>
 <div id="hint" class="pill"><b>◀ ▶</b> plane &nbsp; <b>▲ ▼</b> range &nbsp; <b>OK</b> map &nbsp; <b>BACK</b> <span id="backs">leave</span></div>

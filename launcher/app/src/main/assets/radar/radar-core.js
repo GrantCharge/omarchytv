@@ -92,7 +92,7 @@
       if (!a || a.lat == null || a.lon == null || !a.hex) return;
       var g = a.alt_baro === "ground";
       out.push({ hex: String(a.hex).toLowerCase().replace(/[^0-9a-f]/g, ""), flight: call(a.flight), lat: Number(a.lat), lon: Number(a.lon),
-        alt: g ? 0 : num(a.alt_baro != null ? a.alt_baro : a.alt_geom), ground: g, gs: num(a.gs), track: num(a.track),
+        alt: g ? 0 : num(a.alt_baro != null ? a.alt_baro : a.alt_geom), altGeom: g ? null : num(a.alt_geom), ground: g, gs: num(a.gs), track: num(a.track),
         rate: num(a.baro_rate != null ? a.baro_rate : a.geom_rate), squawk: a.squawk ? String(a.squawk).slice(0, 4) : "",
         reg: a.r ? String(a.r).slice(0, 10) : "", type: a.t ? String(a.t).toUpperCase().slice(0, 4) : "", category: a.category || "",
         at: t - (num(a.seen_pos) || 0), src: "adsb.lol" });
@@ -154,6 +154,20 @@
   }
 
   // ------------------------------------------------------------------ words and colours
+  /** How far along its route a plane is: {flown, left} in nm, frac 0..1, eta in minutes (or null). Far from the end
+   *  (over 150 nm) a slow plane is still climbing or about to descend: the time counts at least 440 kt, a jet's cruise. */
+  function progress(r, la, lo, gs) {
+    if (!r || r.oLat == null || r.dLat == null || la == null || lo == null) return null;
+    var flown = distNm(r.oLat, r.oLon, la, lo), left = distNm(la, lo, r.dLat, r.dLon);
+    if (!isFinite(flown) || !isFinite(left) || flown + left <= 0) return null;
+    return { flown: flown, left: left, frac: Math.max(0, Math.min(1, flown / (flown + left))),
+      eta: gs != null && gs > 60 ? left / (left > 150 ? Math.max(gs, 440) : gs) * 60 : null };
+  }
+  /** Minutes as FR24 writes them: 05:50 (hours:minutes). */
+  function hhmm(min) {
+    var m = Math.max(0, Math.round(min)), h = Math.floor(m / 60);
+    return (h < 10 ? "0" : "") + h + ":" + (m % 60 < 10 ? "0" : "") + (m % 60);
+  }
   function thousands(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
   function altText(p) {
     if (p.ground) return "on the ground";
@@ -199,7 +213,7 @@
   }
 
   root.RadarCore = { classify: classify, mercX: mercX, mercY: mercY, view: view, tiles: tiles, box: box, distNm: distNm, bearing: bearing,
-    compass: compass, fromAdsb: fromAdsb, fromOpenSky: fromOpenSky, merge: merge, now: now, pick: pick, thousands: thousands,
+    compass: compass, fromAdsb: fromAdsb, fromOpenSky: fromOpenSky, merge: merge, now: now, pick: pick, thousands: thousands, progress: progress, hhmm: hhmm,
     altText: altText, altColor: altColor, svg: svg, tileUrl: tileUrl, RANGES: RANGES, STYLES: STYLES, MAPS: MAPS, SCALE: I.SCALE };
   if (typeof module !== "undefined" && module.exports) module.exports = root.RadarCore;
 })(typeof window !== "undefined" ? window : this);
