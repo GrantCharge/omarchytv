@@ -287,7 +287,7 @@
       if (cs && (f || !both)) {   // asked with the aircraft and nothing came: the next turn asks for the route alone
         var o = (f && f.origin) || {}, d = (f && f.destination) || {};
         routes[cs] = f ? { from: o.iata_code || o.icao_code || "", to: d.iata_code || d.icao_code || "", fromCity: o.municipality || "", toCity: d.municipality || "",
-          airline: (f.airline || {}).name || "", oLat: numOr(o.latitude), oLon: numOr(o.longitude), dLat: numOr(d.latitude), dLon: numOr(d.longitude) } : {};
+          airline: (f.airline || {}).name || "", iata: f.callsign_iata || "", oName: o.name || "", dName: d.name || "", oLat: numOr(o.latitude), oLon: numOr(o.longitude), dLat: numOr(d.latitude), dLon: numOr(d.longitude) } : {};
       }
       if (hex === sel || (p && p.hex === sel)) card();
     });
@@ -386,9 +386,18 @@
     var inf = info[p.hex] || {}, r = routeOf(p), any = p.flight ? routes[p.flight] : null;
     el.hidden = false;
     $("cs").textContent = p.name;
+    var type0 = p.type || inf.type || "";   // the tags after the callsign, as on FR24: the IATA flight number and the type code
+    $("tags").innerHTML = (any && any.iata && any.iata !== p.name ? "<i>" + esc(any.iata) + "</i>" : "") + (type0 ? "<i>" + esc(type0) + "</i>" : "");
     $("airline").textContent = (any && any.airline) || inf.owner || "";
     $("route").hidden = !r;
     if (r) { $("from").textContent = r.from; $("to").textContent = r.to; $("fromCity").textContent = r.fromCity || ""; $("toCity").textContent = r.toCity || ""; }
+    var pg = r ? C.progress(r, p.la, p.lo, p.gs) : null;   // the bar under the route and what is left of it
+    $("prog").hidden = !pg;
+    if (pg) {
+      $("progFill").style.width = Math.round(pg.frac * 100) + "%";
+      $("flown").textContent = "Flown " + C.thousands(pg.flown) + " nm";
+      $("left").textContent = pg.eta != null && !p.ground ? "Arriving in " + C.hhmm(pg.eta) : C.thousands(pg.left) + " nm to go";
+    }
     var ph = $("photo"), by = $("photoBy");
     if (inf.photo) { if (ph.getAttribute("src") !== inf.photo) ph.src = inf.photo; ph.hidden = false; by.hidden = false; by.textContent = "photo: airport-data.com"; }
     else { ph.hidden = true; by.hidden = true; ph.removeAttribute("src"); }
@@ -397,8 +406,13 @@
     $("rows").innerHTML =
       row("Aircraft", inf.full || (nameT && nameT !== type ? nameT + " (" + type + ")" : type)) +
       row("Registration", p.reg || inf.reg) +
-      row("Altitude", C.altText(p) + (p.ground ? "" : rate)) +
-      row("Speed", p.gs != null ? Math.round(p.gs) + " kt" : "") +
+      row("From", r ? (r.oName || r.fromCity || r.from) : "") +
+      row("To", r ? (r.dName || r.toCity || r.to) : "") +
+      row("To go", pg ? C.thousands(pg.left) + " nm of " + C.thousands(pg.flown + pg.left) : "") +
+      row("Barometric alt.", C.altText(p) + (p.ground ? "" : rate)) +
+      row("GPS altitude", p.altGeom != null && !p.ground ? C.thousands(p.altGeom) + " ft" : "") +
+      row("Ground speed", p.gs != null ? Math.round(p.gs) + " kts" : "") +
+      row("Owner", inf.owner && inf.owner !== ((any && any.airline) || "") ? inf.owner + (inf.country ? " · " + inf.country : "") : "") +
       row("Heading", p.track != null ? Math.round(p.track) + "° " + C.compass(p.track) : "") +
       row("From here", p.nm != null ? Math.round(p.nm) + " nm " + C.compass(p.brg) : "") +
       row("Squawk", p.squawk) +
