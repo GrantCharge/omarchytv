@@ -60,6 +60,7 @@ final class HomeV29 extends FrameLayout {
         // v2.10
         void wifiClick();
         void openBluetooth();
+        void connectAirPods();
         void openTv();
         void tileMenu(int appPos, View anchor);
         void moveApp(int from, int to);
@@ -225,7 +226,7 @@ final class HomeV29 extends FrameLayout {
         right.addView(barWx, bwl);
         barWx.setVisibility(GONE);
         // v2.10: no gear (the menu is the Omarchy logo on the left).
-        int[] icons = {R.drawable.ln_cinemarchy, R.drawable.ln_arcade, R.drawable.ln_wifi, R.drawable.ln_bt, R.drawable.ln_vol, R.drawable.ln_input, R.drawable.ln_monitor};
+        int[] icons = {R.drawable.ln_cinemarchy, R.drawable.ln_arcade, R.drawable.ln_wifi, R.drawable.ln_bt, R.drawable.ln_vol, R.drawable.ln_input, R.drawable.ln_monitor, R.drawable.ln_airpods};
         for (int ic : icons) {
             View b = iconButton(ic, 24 + 26, 24);
             right.addView(b);
@@ -241,6 +242,7 @@ final class HomeV29 extends FrameLayout {
         });
         barIcons.get(5).setOnClickListener(host::showInputs);
         barIcons.get(6).setOnClickListener(host::screenPc);
+        barIcons.get(7).setOnClickListener(v -> host.connectAirPods());
         tip = text("", 19, false);
         tip.setVisibility(GONE);
         tip.setPadding(px(14), px(8), px(14), px(8));
@@ -1203,7 +1205,7 @@ final class HomeV29 extends FrameLayout {
             return;
         }
         String[] labels = {"cinemarchy", "arcade", host.wifiName(), "bluetooth", act.getString(R.string.v29_volume), act.getString(R.string.inputs),
-                act.getString(R.string.v29_screen_pc)};
+                act.getString(R.string.v29_screen_pc), act.getString(R.string.airpods)};
         if (k == 4) {
             android.media.AudioManager am = act.getSystemService(android.media.AudioManager.class);
             if (am != null) labels[4] += " " + Math.round(100f * am.getStreamVolume(3) / Math.max(1, am.getStreamMaxVolume(3))) + "%";

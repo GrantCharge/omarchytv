@@ -331,6 +331,13 @@
     <string name="v29_screen_asked">Asked the PC: confirm on its screen</string>
     <string name="v29_set_display">Display</string>
     <string name="v29_set_sound">Sound</string>
+    <string name="airpods">AirPods Pro</string>
+    <string name="airpods_connecting">Connecting %1$s…</string>
+    <string name="airpods_ok">%1$s: connect sent. Open the case lid if no sound.</string>
+    <string name="airpods_failed">AirPods Pro did not connect. Open the case lid and try again.</string>
+    <string name="airpods_not_paired">No paired AirPods Pro found. Pair them once in TV settings.</string>
+    <string name="airpods_bt_off">Bluetooth is off.</string>
+    <string name="airpods_no_bt">This TV has no Bluetooth.</string>
     <string name="v29_set_bt">Bluetooth</string>
     <string name="v29_set_apps">Apps</string>
     <string name="v29_set_storage">Storage</string>
