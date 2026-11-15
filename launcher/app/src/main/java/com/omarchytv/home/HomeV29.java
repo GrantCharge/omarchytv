@@ -1335,13 +1335,18 @@ final class HomeV29 extends FrameLayout {
 
     // ---- bar tooltip (network name only in the menu shown while the icon is focused) ----
 
+    private String airPodsLabel() {
+        String n = AirPods.pairedName(act);
+        return n != null ? n : act.getString(R.string.airpods);
+    }
+
     private void showTip(View anchor, int k) {
         if (anchor == null) {
             tip.setVisibility(GONE);
             return;
         }
         String[] labels = {"cinemarchy", "radiomarchy", "arcade", host.wifiName(), "bluetooth", act.getString(R.string.v29_volume), act.getString(R.string.inputs),
-                act.getString(R.string.v29_screen_pc), act.getString(R.string.airpods)};
+                act.getString(R.string.v29_screen_pc), airPodsLabel()};
         if (k == 1 && RadioPlayer.peek() != null && RadioPlayer.peek().current() != null) labels[1] += " · " + RadioPlayer.peek().current().line();
         if (k == 5) {
             android.media.AudioManager am = act.getSystemService(android.media.AudioManager.class);
