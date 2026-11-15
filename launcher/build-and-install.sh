@@ -2,6 +2,8 @@
 # Build the OmarchyTV launcher APK and install it on the TV as the default home screen.
 # Usage: TV_HOST=192.168.1.50 launcher/build-and-install.sh
 #        STOCK_LAUNCHER=com.google.android.tvlauncher (default; see README for Sony notes)
+# NOTE (Grant's fork): this installs com.omarchytv.home. On Grant's TV install only the dev copy
+# (com.omarchytv.home.dev, built with ./gradlew -PdevSuffix). See launcher/CLAUDE.md.
 set -euo pipefail
 cd "$(dirname "$0")"
 : "${TV_HOST:?set TV_HOST to the TV IP address, e.g. TV_HOST=192.168.1.50 $0}"

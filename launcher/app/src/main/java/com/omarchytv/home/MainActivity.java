@@ -341,6 +341,11 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
             }
 
             @Override
+            public void connectAirPods() {
+                AirPods.connect(MainActivity.this);
+            }
+
+            @Override
             public void openTv() {
                 onTvClick();
             }
@@ -5281,6 +5286,12 @@ public class MainActivity extends Activity implements AppAdapter.TileListener, T
         new android.app.AlertDialog.Builder(this).setTitle(R.string.search_entry).setView(q)
                 .setPositiveButton(android.R.string.ok, (d, w) -> runSearch(java.util.Collections.singletonList(q.getText().toString())))
                 .setNegativeButton(android.R.string.cancel, null).show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int req, String[] perms, int[] res) {
+        super.onRequestPermissionsResult(req, perms, res);
+        if (req == AirPods.REQ_BT_CONNECT && res.length > 0 && res[0] == PackageManager.PERMISSION_GRANTED) AirPods.connect(this);
     }
 
     @Override
