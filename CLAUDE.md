@@ -22,3 +22,17 @@ This file only routes. Detail is in `README.md` (large, read parts only).
 - Check the package before you install it: `aapt2 dump packagename <apk>` must print `com.omarchytv.home.dev`.
 - Open it with the Home key (`adb shell input keyevent 3`), or with `adb shell am start -n com.omarchytv.home.dev/com.omarchytv.home.MainActivity`.
 - Do not use `launcher/build-and-install.sh` on Grant's TV. It builds and installs `com.omarchytv.home`, and sets it as the home screen.
+
+## Agent skills
+
+### Issue tracker
+
+GitHub issues in this repo. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default five roles, label names equal the role names. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context. See `docs/agents/domain.md`.
