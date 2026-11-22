@@ -2,14 +2,14 @@
 
 This file only routes. Detail is in `README.md` (large, read parts only).
 
-- `launcher/`: Android TV launcher app. See `launcher/CLAUDE.md`.
-- `webos/`: LG webOS app. See `webos/CLAUDE.md`.
-- `tizen/`: Samsung Tizen app. See `tizen/CLAUDE.md`.
-- `mobile-companion/`: phone app. See `mobile-companion/CLAUDE.md`.
+- `launcher/`: Android TV launcher app. See `launcher/AGENTS.md`.
+- `webos/`: LG webOS app. See `webos/AGENTS.md`.
+- `tizen/`: Samsung Tizen app. See `tizen/AGENTS.md`.
+- `mobile-companion/`: phone app. See `mobile-companion/AGENTS.md`.
 - `pc-plugin/`: PC side (`omarchy-link`, `omarchy-tv`). Read `pc-plugin/README.md`.
 - `homewatch/`: home watch service. Read `homewatch/README.md`.
-- `tools/`: helper scripts. See `tools/CLAUDE.md`.
-- `docs/`: guides and pictures. See `docs/CLAUDE.md`.
+- `tools/`: helper scripts. See `tools/AGENTS.md`.
+- `docs/`: guides and pictures. See `docs/AGENTS.md`.
 - `CHANGELOG.md`, `RELEASE-2.12.0-beta.md`: what changed.
 
 ## Rule: install only the dev copy on Grant's TV
