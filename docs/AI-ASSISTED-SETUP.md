@@ -47,11 +47,11 @@ screensaver value, the old HOME activity).
 
 ## Claude Code
 
-Clone this repo and put this file in its root as `CLAUDE.md` (Claude Code reads it automatically), then start
+Clone this repo and put this file in its root as `AGENTS.md` (Claude Code reads it automatically), then start
 `claude` in that folder and say "set up my TV at <TV-IP>".
 
 ```markdown
-# CLAUDE.md — OmarchyTV TV setup
+# AGENTS.md — OmarchyTV TV setup
 
 You help install OmarchyTV (com.omarchytv.home) on an Android TV over adb. Follow launcher/docs/INSTALL.md and
 docs/DEBLOAT.md exactly.
