@@ -412,20 +412,15 @@ final class HomeV29 extends FrameLayout {
         macBox.addOnLayoutChangeListener((v, l, top, r, bottom, ol, ot, or, ob) -> {
             if (bottom - top != ob - ot && cfg != null && editPanel == null) post(() -> applyPanelPos(cfg));
         });
-        BoxView ai = new BoxView(a, s, tf);
-        ai.setLegend("ai credits · pc", px(14), px(18));
-        ai.setFocusable(true);
-        ai.focusBorder = true;
-        LayoutParams aiLp = new LayoutParams(px(640), -2);
-        aiLp.leftMargin = px(32);
-        aiLp.topMargin = px(360);
-        addView(ai, aiLp);
+        // Fork: ai credits stays in the top-right row next to weather (upstream 2.22 moved it under the term box,
+        // which puts it in the top-left corner over the radar when the radar replaces the term box).
+        BoxView ai = widget(r1, "ai credits · pc", 16);
         // Keep the PC and AI panels one column wide. Give Weather the 80 px used to fill the left gutter.
         float colWidth = sideColWidth(false);
         LinearLayout.LayoutParams wxl = (LinearLayout.LayoutParams) wxBox.getLayoutParams();
         wxl.width = px(weatherColWidth(false));
         wxl.weight = 0f;
-        for (View col : new View[]{raceBox, pcBox, macBox}) {
+        for (View col : new View[]{raceBox, pcBox, macBox, ai}) {
             LinearLayout.LayoutParams cl = (LinearLayout.LayoutParams) col.getLayoutParams();
             cl.width = px(colWidth);
             cl.weight = 0f;
@@ -856,6 +851,7 @@ final class HomeV29 extends FrameLayout {
         // v2.10: every home widget can be switched off (Settings → Widgets); the clock lives only in the bar.
         wxBox.setVisibility(c.wWeather ? VISIBLE : GONE);
         pcBox.setVisibility(c.wPc ? VISIBLE : GONE);
+        syncStatsColumn();
         aiBoxRef.setVisibility(activeWs == 1 && c.wAi ? VISIBLE : GONE);
         raceBox.setVisibility(c.wRacing ? VISIBLE : GONE);
         // weather is the row's first panel when racing is off: no gap in front of it then
@@ -945,6 +941,7 @@ final class HomeV29 extends FrameLayout {
         nativeDetails(pcBody, nativePane("native-pc-details"), false);
         JSONObject mac = nativePane("native-mac");
         macBox.setVisibility(cfg.wPc && mac != null ? VISIBLE : GONE);
+        syncStatsColumn();
         macBody.removeAllViews();
         nativeMac(mac);
         if (mac != null && macBody.getChildCount() == 0) macBody.addView(line(act.getString(R.string.native_unavailable)));
@@ -955,8 +952,19 @@ final class HomeV29 extends FrameLayout {
         if (activeWs == 4) buildWorkspace();
     }
 
+    /** Fork: the pc / mac column takes no room when both of its panels are off, so ai credits sits next to weather. */
+    private void syncStatsColumn() {
+        boolean any = pcBox.getVisibility() != GONE || macBox.getVisibility() != GONE;
+        statsColumn.setVisibility(any ? VISIBLE : GONE);
+    }
+
     private void positionLeftWidgets() {
         if (cfg == null) return;
+        if (aiBoxRef.getParent() != this) {   // fork: ai credits sits in the widgets row, nothing to place
+            LinearLayout.LayoutParams bodyLp = (LinearLayout.LayoutParams) aiScroll.getLayoutParams();
+            if (bodyLp.height != -2) { bodyLp.height = -2; aiScroll.setLayoutParams(bodyLp); }
+            return;
+        }
         int termTop = Math.round(term.getTop() + term.getTranslationY());
         int top = term.isShown() && term.getBottom() > 0
                 ? Math.round(term.getBottom() + term.getTranslationY()) + px(16) : px(76);
@@ -2742,7 +2750,7 @@ final class HomeV29 extends FrameLayout {
         LinearLayout.LayoutParams statsLp = (LinearLayout.LayoutParams) statsColumn.getLayoutParams();
         statsLp.width = px(side);
         statsColumn.setLayoutParams(statsLp);
-        for (View col : new View[]{pcBox, macBox}) {
+        for (View col : new View[]{pcBox, macBox, aiBoxRef}) {
             LinearLayout.LayoutParams cl = (LinearLayout.LayoutParams) col.getLayoutParams();
             cl.width = px(side);
             cl.weight = 0f;
