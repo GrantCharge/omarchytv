@@ -1,0 +1,44 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "webos/app/index.html"
+        ],
+        "createdAt": "2026-11-27T01:32:52.028Z",
+        "reason": "assistant decision (user delegated): upstream piermark/omarchytv file merged unchanged in 2.22; fork does not edit it to avoid merge conflicts; theme palette colour, not a fork design choice"
+      },
+      {
+        "rule": "dark-glow",
+        "value": "*",
+        "files": [
+          "webos/app/index.html"
+        ],
+        "createdAt": "2026-11-27T01:32:52.043Z",
+        "reason": "assistant decision (user delegated): upstream piermark/omarchytv file merged unchanged in 2.22; fork does not edit it to avoid merge conflicts; theme palette colour, not a fork design choice"
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "webos/app/index.html"
+        ],
+        "createdAt": "2026-11-27T01:32:52.062Z",
+        "reason": "assistant decision (user delegated): upstream piermark/omarchytv file merged unchanged in 2.22; fork does not edit it to avoid merge conflicts; theme palette colour, not a fork design choice"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "launcher/app/src/main/assets/settings/index.html"
+        ],
+        "createdAt": "2026-11-27T01:32:52.079Z",
+        "reason": "assistant decision (user delegated): upstream piermark/omarchytv file merged unchanged in 2.22; fork does not edit it to avoid merge conflicts; theme palette colour, not a fork design choice"
+      }
+    ]
+  }
+}
